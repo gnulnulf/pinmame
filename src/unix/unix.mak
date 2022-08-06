@@ -122,6 +122,7 @@ OBJ     = $(NAME).obj
 VGM_OBJ = $(NAME).obj/vgm
 PROC_OBJ = $(NAME).obj/p-roc
 LISY_OBJ = $(NAME).obj/lisy
+MAMEFIFO_OBJ = $(NAME).obj/mamefifo
 
 CORE_OBJDIRS = $(OBJ) $(VGM_OBJ) \
 	$(OBJ)/drivers $(OBJ)/machine $(OBJ)/vidhrdw $(OBJ)/sndhrdw \
@@ -184,6 +185,10 @@ ifdef LISY_X
 include src/lisy/lisy.mak
 endif
 
+ifdef MAME_FIFO
+include src/mamefifo/mamefifo.mak
+endif
+
 ifdef DEBUG
 DBGDEFS = -DMAME_DEBUG
 else
@@ -232,6 +237,12 @@ endif
 ifdef XMAME_NET
 MY_CFLAGS += -DXMAME_NET
 endif
+
+ifdef MAME_FIFO
+MY_CFLAGS += -DMAME_FIFO
+endif
+
+MY_CFLAGS += -DMAME_FIFO
 
 ifdef AVICAPTURE
 MY_CFLAGS += -DAVICAPTURE
@@ -324,9 +335,9 @@ MY_OBJDIRS = $(CORE_OBJDIRS) $(sort $(OBJDIRS))
 ##############################################################################
 # Begin of the real makefile.
 ##############################################################################
-$(NAME).$(DISPLAY_METHOD): $(OBJS) $(VGMOBJS) $(PROCOBJS) $(LISYOBJS)
+$(NAME).$(DISPLAY_METHOD): $(OBJS) $(VGMOBJS) $(PROCOBJS) $(LISYOBJS) $(MAMEFIFOOBJS)
 	$(CC_COMMENT) @echo 'Linking $@ ...'
-	$(CC_COMPILE) $(LD) $(LDFLAGS) -o $@ $(OBJS) $(VGMOBJS) $(PROCOBJS) $(LISYOBJS) $(MY_LIBS) 
+	$(CC_COMPILE) $(LD) $(LDFLAGS) -o $@ $(OBJS) $(VGMOBJS) $(PROCOBJS) $(LISYOBJS) $(MAMEFIFOOBJS) $(MY_LIBS) 
 
 tools: $(ZLIB) $(OBJDIRS) $(TOOLS)
 
@@ -371,6 +382,12 @@ $(OBJ)/mess/%.o: mess/%.c
 	$(CC_COMPILE) $(CC) $(MY_CFLAGS) -o $@ -c $<
 endif
 
+#ifdef MAME_FIFO
+$(OBJ)/mamefifo.o: src/unix/mamefifo.c
+	$(CC_COMMENT) @echo '[MAMEFIFO] Compiling $< ...'
+	$(CC_COMPILE) $(CC) $(MY_CFLAGS) -o $@ -c $<
+#endif
+
 $(OBJ)/%.o: src/%.c
 	$(CC_COMMENT) @echo 'Compiling $< ...'
 	$(CC_COMPILE) $(CC) $(MY_CFLAGS) -o $@ -c $<
@@ -391,6 +408,15 @@ $(PROC_OBJ)/%.o: src/p-roc/%.cpp
 $(LISY_OBJ)/%.o: src/lisy/%.c
 	$(CC_COMMENT) @echo 'Compiling $< ...'
 	$(CC_COMPILE) $(CC) $(MY_CFLAGS) -o $@ -c $<
+
+$(LISY_OBJ)/%.o: src/lisy/%.c
+	$(CC_COMMENT) @echo 'Compiling $< ...'
+	$(CC_COMPILE) $(CC) $(MY_CFLAGS) -o $@ -c $<
+
+$(MAMEFIFO_OBJ)/%.o: src/mamefifo/%.c
+	$(CC_COMMENT) @echo 'Compiling $< ...'
+	$(CC_COMPILE) $(CC) $(MY_CFLAGS) -o $@ -c $<
+
 
 #$(CPP_OBJ)/%.o: src/wpc/%.cpp
 #	$(CC_COMMENT) @echo 'Compiling $< ...'
