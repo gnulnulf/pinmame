@@ -8,9 +8,13 @@
 #endif
 */
 
+int fifofd;
+FILE *mamefifo;
+
+
 void mame_fifo_init();
 void mame_fifo_close();
-
+void mame_fifo_send(char *mamefifostring );
 
 
 #endif

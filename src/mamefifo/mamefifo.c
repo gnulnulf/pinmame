@@ -39,10 +39,9 @@ void mame_fifo_init()
     mamefifo = fdopen(fifofd, "w");
 //    mamefifo = fopen(myfifo, "a");
 
-    fprintf(mamefifo,"Hello mamefifo\n");
-    fflush(mamefifo);
-    fprintf(mamefifo,"Hello2 mamefifo\n");
-    fflush(mamefifo);
+//    fprintf(mamefifo,"Hello mamefifo\n");
+ //   fflush(mamefifo);
+    mame_fifo_send("Hello mame_fifo_send\n");
 
 }
 
@@ -58,6 +57,11 @@ void mame_fifo_close()
     //unlink(myfifo);
 }
 
+
+void mame_fifo_send(char *mamefifostring ) {
+    fprintf(mamefifo,mamefifostring);
+    fflush(mamefifo);
+} 
 
 /*
 static volatile sig_atomic_t keep_going = 1;
