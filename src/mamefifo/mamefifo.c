@@ -4,11 +4,12 @@
 
 
 #include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+//#include <sys/stat.h>
+//#include <sys/types.h>
+//#include <unistd.h>
 #include <stdio.h>
-#include <signal.h>
+#include <stdlib.h>
+//#include <signal.h>
 
 // mame_fifo globals
     int fifofd;
@@ -19,19 +20,29 @@ void mame_fifo_init()
 {
     fprintf(stdout,"Open mamefifo %s\n",myfifo);
     
+    //unlink(myfifo);
     // make pipe
-    mkfifo(myfifo, 0666);
+    //mkfifo(myfifo, 0666);
 
     // open it
-    fifofd = open(myfifo, O_CREAT | O_RDWR);
+    //fifofd = open("/tmp/mypipe",  O_WRONLY | O_NONBLOCK);
+    fprintf(stdout,"Waiting for reader on %s\n",myfifo);
+    fifofd = open("/tmp/mypipe",  O_WRONLY );
+    //fifofd = open(myfifo, O_CREAT | O_RDWR);
 
     // make non-blocking
-    fcntl(fifofd, F_SETFL, fcntl(fifofd, F_GETFL) | O_NONBLOCK);
+    //fcntl(fifofd, F_SETFL, fcntl(fifofd, F_GETFL) | O_NONBLOCK);
+
+
 
     // make a file descriptor for pipe
-    mamefifo = fdopen(fifofd, "rw");
+    mamefifo = fdopen(fifofd, "w");
+//    mamefifo = fopen(myfifo, "a");
 
     fprintf(mamefifo,"Hello mamefifo\n");
+    fflush(mamefifo);
+    fprintf(mamefifo,"Hello2 mamefifo\n");
+    fflush(mamefifo);
 
 }
 
@@ -39,8 +50,10 @@ void mame_fifo_init()
 void mame_fifo_close()
 {
     fprintf(mamefifo,"Close mamefifo\n");
+    fflush(mamefifo);
+
     fprintf(stdout,"Close mamefifo\n");
-    close(fifofd);
+    fclose(mamefifo);
 
     //unlink(myfifo);
 }

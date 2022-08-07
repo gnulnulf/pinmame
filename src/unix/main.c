@@ -25,6 +25,14 @@ int osd_init(void)
 #ifdef XMAME_NET
 	if (osd_net_init()      !=OSD_OK) return OSD_NOT_OK;
 #endif	
+#ifdef MAME_FIFO
+	//if (mame_fifo_init()      !=OSD_OK) return OSD_NOT_OK;
+	mame_fifo_init();
+	//    fprintf(stdout,"Hello from mamefifo\n");
+#endif	
+    fprintf(stdout,"Hello after mamefifo\n");
+
+
 	if (osd_input_initpre() !=OSD_OK) return OSD_NOT_OK;
 
 	return OSD_OK;
@@ -37,6 +45,9 @@ void osd_exit(void)
 {
 #ifdef XMAME_NET
 	osd_net_close();
+#endif
+#ifdef MAME_FIFO
+	mame_fifo_close();
 #endif
 	osd_input_close();
 }
