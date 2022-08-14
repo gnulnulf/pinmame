@@ -242,8 +242,6 @@ ifdef MAME_FIFO
 MY_CFLAGS += -DMAME_FIFO
 endif
 
-MY_CFLAGS += -DMAME_FIFO
-
 ifdef AVICAPTURE
 MY_CFLAGS += -DAVICAPTURE
 MY_LIBS += -lavcodec -lmp3lame

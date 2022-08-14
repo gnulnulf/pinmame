@@ -1619,12 +1619,12 @@ void core_setSw(int swNo, int value) {
 #endif
 
 
-    fprintf(stdout,"SWITCH: %s,%s",swNo,value);
+fprintf(stdout,"SWITCH: %s,%s",swNo,value);
 
-//#ifdef MAME_FIFO
+#ifdef MAME_FIFO
     fprintf(mamefifo,"SWITCH: %s,%s",swNo,value);
     fflush(mamefifo);
-//#endif
+#endif
 
   coreGlobals.swMatrix[swNo/8] |=  ((value ? 0xff : 0) ^ coreGlobals.invSw[swNo/8]) & (1<<(swNo%8));
 #ifdef PROC_SUPPORT

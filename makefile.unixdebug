@@ -53,7 +53,7 @@ TARGET = pinmame
 #XMAME_NET = 1
 
 # Enable named pipe
-MAME_FIFO = 1
+# MAME_FIFO = 0
 
 # Uncomment the next lines to use x86-asm cpu cores.  This is only
 # supported for x86 machines with nasm-0.98 or higher available in your

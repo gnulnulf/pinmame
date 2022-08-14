@@ -28,6 +28,11 @@ int osd_init(void)
 #ifdef MAME_FIFO
 	//if (mame_fifo_init()      !=OSD_OK) return OSD_NOT_OK;
 	mame_fifo_init();
+	char bla[4096] ;
+	sprintf(bla, "Will this work?\n\n");
+    mame_fifo_send(bla);
+    mame_fifo_send("Test2\n");
+
 	//    fprintf(stdout,"Hello from mamefifo\n");
 #endif	
     fprintf(stdout,"Hello after mamefifo\n");
