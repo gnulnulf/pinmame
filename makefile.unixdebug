@@ -618,10 +618,10 @@ ARCH  = linux
 # use SDL.
 
 # X11
-DISPLAY_METHOD = x11
+# DISPLAY_METHOD = x11
 
 # SDL library 
-#DISPLAY_METHOD = SDL
+DISPLAY_METHOD = sdl
 
 # SVGALib, only supported under Linux
 # DISPLAY_METHOD = svgalib
