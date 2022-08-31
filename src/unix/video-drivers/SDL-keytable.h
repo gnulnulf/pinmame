@@ -514,6 +514,256 @@ unsigned char klookup[] = {
 };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 unsigned char klookuphigh[] = {
 KEY_NONE				, //            0x40000000	
 KEY_NONE				, //            0x40000001	
@@ -531,7 +781,6 @@ KEY_NONE				, //            0x4000000c
 KEY_NONE				, //            0x4000000d	
 KEY_NONE				, //            0x4000000e	
 KEY_NONE				, //            0x4000000f	
-
 KEY_NONE				, //            0x40000010	
 KEY_NONE				, //            0x40000011	
 KEY_NONE				, //            0x40000012	
@@ -593,7 +842,6 @@ KEY_NONE                , // 1073741897 0x40000049 SDLK_INSERT
 KEY_NONE                , // 1073741898 0x4000004A SDLK_HOME
 KEY_NONE                , // 1073741899 0x4000004B SDLK_PAGEUP
 KEY_NONE				, //            0x40000000	
-
 KEY_NONE                , // 1073741901 0x4000004D SDLK_END
 KEY_NONE                , // 1073741902 0x4000004E SDLK_PAGEDOWN
 KEY_NONE                , // 1073741903 0x4000004F SDLK_RIGHT
@@ -652,6 +900,12 @@ KEY_NONE				, //            0x40000000
 KEY_NONE				, //            0x40000000	
 KEY_NONE                , // 1073741957 0x40000085 SDLK_KP_COMMA
 KEY_NONE                , // 1073741958 0x40000086 SDLK_KP_EQUALSAS400
+KEY_NONE				, //            0x40000000	
+KEY_NONE				, //            0x40000000	
+KEY_NONE				, //            0x40000000	
+KEY_NONE				, //            0x40000000	
+KEY_NONE				, //            0x40000000	
+KEY_NONE				, //            0x40000000	
 KEY_NONE				, //            0x40000000	
 KEY_NONE				, //            0x40000000	
 KEY_NONE				, //            0x40000000	

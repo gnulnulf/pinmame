@@ -5,7 +5,7 @@
  based on the Linux SVGALib adaptation by Phillip Ezolt.
 
  updated and patched by Ricardo Calixto Quesada (riq@core-sdi.com)
-
+ 
  patched by Patrice Mandin (pmandin@caramail.com)
   modified support for fullscreen modes using SDL and XFree 4
   added toggle fullscreen/windowed mode (Alt + Return)
@@ -19,6 +19,10 @@
   added support for 32bpp XFree86 modes
   new update routines: 8->32bpp & 16->32bpp
 
+ updated for sdl2 by Arco van Geest <arco@appeltaart.mine.nu>
+  removed PARANOIC and HERMES for now.
+  only depth=16 works
+
  TODO: 
        Test the 16bpp->24bpp update routine
        Test the 16bpp->32bpp update routine
@@ -26,8 +30,7 @@
        Test mouse buttons (which games use them?)
 
 ***************************************************************************/
-/* #define PARANOIC */
-#define __SDL_C
+#define __SDL2_C
 
 #undef SDL_DEBUG
 #define SDL_DEBUG
@@ -46,8 +49,7 @@
 static int Vid_width;
 static int Vid_height;
 static int Vid_depth = 16;
-//static SDL_Surface* Surface;
-static SDL_Surface* Offscreen_surface;
+//1 static SDL_Surface* Offscreen_surface;
 static int hardware=1;
 static int mode_number=-1;
 static int start_fullscreen=0;
@@ -67,35 +69,6 @@ SDL_Renderer* sdlRenderer;
 #define WIDTH 1024
 #define HEIGHT 768
 Uint16 * pixels = NULL;
-
-
-/* returns a number between 1 and max */
-int Random(int max) {
-	return (rand() % max) + 1;
-}
-
-int rectCount = 0;
-void DrawRandomRectangle() {
-	char buff[20];
-	SDL_Rect rect;
-	SDL_SetRenderDrawColor(sdlRenderer, Random(256) - 1, Random(256) - 1, Random(256) - 1, 255);
-	rect.h = 120;// Random(100) + 20;
-	rect.w = 120;// Random(100) + 20;
-	rect.y = Random(HEIGHT - rect.h - 1);
-	rect.x = Random(WIDTH - rect.w - 1);
-	SDL_RenderFillRect(sdlRenderer, &rect);
-
-	rectCount++;
-	//if (rectCount % 100000 == 0) {
-	//	SDL_RenderPresent(renderer);
-	//}
-}
-
-
-
-
-
-
 
 typedef void (*update_func_t)(struct mame_bitmap *bitmap);
 
@@ -132,12 +105,14 @@ void sdl_update_16_to_24bpp(struct mame_bitmap *bitmap);
 void sdl_update_16_to_32bpp(struct mame_bitmap *bitmap);
 void sdl_update_rgb_direct_32bpp(struct mame_bitmap *bitmap);
 
+/*
 void plot32(int x,int y ,int red, int green, int blue, int o){
     pixels[y * Vid_width + x] = (red&0xff)<<24 | (green & 0xff)<<16 | (blue & 0xff)<<8|(o & 0xff) ;
 }
 void plot(int x,int y ,int red, int green, int blue, int o){
    pixels[y * Vid_width + x] = (red&0x1f)<<11 | (green & 0x2f)<<5 | (blue & 0x1f) ;
 }
+*/
 int sysdep_init(void)
 {
    //    SDL_Init(SDL_INIT_VIDEO);
@@ -170,243 +145,68 @@ int sysdep_create_display(int depth)
    if ( pixels ){
       free(pixels);
    }
-   //pixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
    pixels = (Uint16 *) malloc (sizeof(Uint16)*Vid_width*Vid_height);
-   // grey
-   memset(pixels, 255, Vid_width * Vid_height * sizeof(Uint16));
-
-     for(int y=0;y<Vid_height;y++) {
-        plot(100,y,255,0,0,255);
-        plot(101,y,255,255,0,255);
-        plot(102,y,255,128,0,255);
-        plot(103,y,255,0,255,255);
-        plot(104,y,0,255,0,255);
-    }
+   /*
+   if ( depth == 16 ) {
+      pixels = (Uint16 *) malloc (sizeof(Uint16)*Vid_width*Vid_height);
+   }
+   if ( depth == 24 ) {
+      // ?
+      pixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
+   }
+   if ( depth == 32 ) {
+      pixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
+   }
+   */
    if (!sdlWindow) {
-   sdlWindow = SDL_CreateWindow(title,
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Vid_width, Vid_height, 0);
-//SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_MAXIMIZED, &sdlWindow, &sdlRenderer);
+         sdlWindow = SDL_CreateWindow(title,
+         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Vid_width, Vid_height, 0);
+         SDL_MaximizeWindow(sdlWindow);
    }
    if (!sdlWindow) {
 		fprintf(stderr,"InitSetup failed to create window");
+      exit (OSD_NOT_OK);
 	}
 
-  //  SDL_Window * window = SDL_CreateWindow("SDL2 Pixel Drawing",
-   //     SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, v_width, v_height, 0);
-
    sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED);
- //  texture = SDL_CreateTexture(sdlRenderer,
- //       SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, Vid_width, Vid_height);
+   if (!sdlRenderer) {
+		fprintf(stderr,"InitSetup failed to create renderer");
+      exit (OSD_NOT_OK);
+	}
+
    sdlTexture = SDL_CreateTexture(sdlRenderer,
         SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, Vid_width, Vid_height);
-
-
-//   Surface = SDL_GetWindowSurface(sdlWindow);
-//   if (!Surface) {
-//      fprintf(stderr,"InitSetup failed to create Surface");
-//   }
-
- /*  Offscreen_surface = SDL_GetWindowSurface(sdlWindow);
-   if (!Offscreen_surface) {
-      fprintf(stderr,"InitSetup failed to create Offscreen_surface");
-      SDL_Quit();
+   if (!sdlTexture) {
+		fprintf(stderr,"InitSetup failed to create texture");
       exit (OSD_NOT_OK);
-   }
-*/
-     /* Offscreen_surface = SDL_CreateRGBSurface(SDL_SWSURFACE,Vid_width,Vid_height,Vid_depth,0,0,0,0); 
-   if(Offscreen_surface==NULL) {
-      SDL_Quit();
-      exit (OSD_NOT_OK);
-   }
-*/
+	}
 
-   //SDL_SetWindowTitle(Surface, "title screen");
-	//SDL_SetWindowTitle(sdlWindow, title);
-   //SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, SDL_WINDOW_SHOWN, &Surface, &renderer2);
-
-
-   SDL_SetRenderDrawColor(sdlRenderer, 255, 0, 0, 255);
+   // clear screen
+   SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
    SDL_RenderClear(sdlRenderer);
-
-   SDL_UpdateTexture(sdlTexture, NULL, pixels, Vid_width * sizeof(Uint16));
    SDL_RenderPresent(sdlRenderer);
 
- 
+   // just some info
    SDL_Log("SDL w,h,d: %d,%d,%d", Vid_width,Vid_height,Vid_depth);
    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");  // make the scaled rendering look smoother.
    SDL_RenderSetLogicalSize(sdlRenderer, Vid_width, Vid_height);
 
-   SDL_Log( "SDL_BITSPERPIXEL %d",SDL_BITSPERPIXEL(16) );
+   SDL_Log( "requested depth %d", depth );
    //sdlTexture = SDL_CreateTexture(sdlRenderer,
    //                            SDL_PIXELFORMAT_ARGB8888,
    //                            SDL_TEXTUREACCESS_STREAMING,
    //                            Vid_width, Vid_height);
 //   SDL_UpdateTexture(sdlTexture, NULL, myPixels, 640 * sizeof (Uint32));
 
+
+// FIXME how can I clean up events?
+SDL_FlushEvents(SDL_KEYDOWN,SDL_KEYUP);
+SDL_FlushEvent(SDL_KEYDOWN);
 SDL_Event event;
-while(SDL_PollEvent(&event)) {}
-
-SDL_Rect rect;
-    rect.x = 250;
-    rect.y = 150;
-    rect.w = 200;
-    rect.h = 200;
-
-//SDL_SetRenderDrawColor(sdlRenderer, 255, 255, 255, 255);
-//SDL_RenderDrawRect(sdlRenderer, &rect);
-
-
-
-
-//SDL_RenderClear(sdlRenderer);
-//SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
-//SDL_RenderPresent(sdlRenderer);
-
-
-/*
-static int display_in_use = 0; // Only using first display 
-
-int i, display_mode_count;
-SDL_DisplayMode mode;
-Uint32 f;
-
-SDL_Log("SDL_GetNumVideoDisplays(): %i", SDL_GetNumVideoDisplays());
-
-display_mode_count = SDL_GetNumDisplayModes(display_in_use);
-if (display_mode_count < 1) {
-    SDL_Log("SDL_GetNumDisplayModes failed: %s", SDL_GetError());
-   exit (OSD_NOT_OK);
-}
-SDL_Log("SDL_GetNumDisplayModes: %i", display_mode_count);
-
-for (i = 0; i < display_mode_count; ++i) {
-    if (SDL_GetDisplayMode(display_in_use, i, &mode) != 0) {
-        SDL_Log("SDL_GetDisplayMode failed: %s", SDL_GetError());
-       exit (OSD_NOT_OK);
-    }
-    f = mode.format;
-
-    SDL_Log("Mode %i\tbpp %i\t%s\t%i x %i",
-            i, SDL_BITSPERPIXEL(f),
-            SDL_GetPixelFormatName(f),
-            mode.w, mode.h);
+while(SDL_PollEvent(&event)) {
+   fprintf(stderr, "clear events");
 }
 
-  int display_count = 0, display_index = 0, mode_index = 0;
-    if ((display_count = SDL_GetNumVideoDisplays()) < 1) {
-        SDL_Log("SDL_GetNumVideoDisplays returned: %i", display_count);
-        exit (OSD_NOT_OK);
-    }
-    if (SDL_GetDisplayMode(display_index, mode_index, &mode) != 0) {
-        SDL_Log("SDL_GetDisplayMode failed: %s", SDL_GetError());
-        exit (OSD_NOT_OK);
-    }
-
-SDL_Log("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i",SDL_BITSPERPIXEL(mode.format), mode.w, mode.h);
-   Vid_depth = SDL_BITSPERPIXEL(mode.format);
-
-
-*/
-
-/*
-   SDL_Rect** vid_modes;
-   //const SDL_VideoInfo* video_info;
-   const SDL_RendererInfo* render_info;
-   int vid_modes_i;
-   int vid_mode_flag; / * Flag to set the video mode * /
-
-   //video_info = SDL_GetVideoInfo();
-
-#ifdef SDL_DEBUG
-   fprintf (stderr,"SDL: create_display(%d): \n",depth);
-   fprintf (stderr,"SDL: Info: HW blits %d\n"
-      "SDL: Info: SW blits %d\n"
-      "SDL: Info: Vid mem %d\n"
-      "SDL: Info: Best supported depth %d\n",
-      render_info->blit_hw,
-      render_info->blit_sw,
-      render_info->video_mem,
-      render_info->vfmt->BitsPerPixel);
-#endif
-*/
-//   Vid_depth = video_info->vfmt->BitsPerPixel;
-
-
-/*
-   vid_modes = SDL_ListModes(NULL,SDL_FULLSCREEN);
-   vid_modes_i = 0;
-
-   hardware = video_info->hw_available;
-
-   if ( (! vid_modes) || ((long)vid_modes == -1)) {
-#ifdef SDL_DEBUG
-      fprintf (stderr, "SDL: Info: Possible all video modes available\n");
-#endif
-      Vid_height = visual_height*heightscale;
-      Vid_width = visual_width*widthscale;
-   } else {
-      int best_vid_mode; / * Best video mode found * /
-      int best_width,best_height;
-      int i;
-
-#ifdef SDL_DEBUG
-      fprintf (stderr, "SDL: visual w:%d visual h:%d\n", visual_width, visual_height);
-#endif
-      best_vid_mode = 0;
-      best_width = vid_modes[best_vid_mode]->w;
-      best_height = vid_modes[best_vid_mode]->h;
-      for (i=0;vid_modes[i];++i)
-      {
-         int cur_width, cur_height;
-
-         cur_width = vid_modes[i]->w;
-         cur_height = vid_modes[i]->h;
-
-#ifdef SDL_DEBUG
-         fprintf (stderr, "SDL: Info: Found mode %d x %d\n", cur_width, cur_height);
-#endif / * SDL_DEBUG * /
-
-         / * If width and height too small, skip to next mode * /
-         if ((cur_width < visual_width*widthscale) || (cur_height < visual_height*heightscale)) {
-            continue;
-         }
-
-         / * If width or height smaller than current best, keep it * /
-         if ((cur_width < best_width) || (cur_height < best_height)) {
-            best_vid_mode = i;
-            best_width = cur_width;
-            best_height = cur_height;
-         }
-      }
-
-#ifdef SDL_DEBUG
-      fprintf (stderr, "SDL: Info: Best mode found : %d x %d\n",
-         vid_modes[best_vid_mode]->w,
-         vid_modes[best_vid_mode]->h);
-#endif / * SDL_DEBUG * /
-
-      vid_modes_i = best_vid_mode;
-
-      / * mode_number is a command line option * /
-      if( mode_number != -1) {
-         if( mode_number >vid_modes_i)
-            fprintf(stderr, "SDL: The mode number is invalid... ignoring\n");
-         else
-            vid_modes_i = mode_number;
-      }
-      if( vid_modes_i<0 ) {
-         fprintf(stderr, "SDL: None of the modes match :-(\n");
-         Vid_height = visual_height*heightscale;
-         Vid_width = visual_width*widthscale;
-      } else {
-         if(*(vid_modes+vid_modes_i)==NULL) 
-            vid_modes_i--;
-
-         Vid_width = (*(vid_modes + vid_modes_i))->w;
-         Vid_height = (*(vid_modes + vid_modes_i))->h;
-      }
-   }
-*/
 
    if( depth == 16 )
    {
@@ -448,48 +248,6 @@ SDL_Log("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i",SDL_BITSPERPIXEL(m
       exit (OSD_NOT_OK);
    }
 
-/*
-sdlTexture = SDL_CreateTexture(sdlRenderer,
-                                            SDL_PIXELFORMAT_ARGB8888,
-                                            SDL_TEXTUREACCESS_STREAMING,
-                                            WIDTH, HEIGHT);
-*/
-/*
-
-   / * Set video mode according to flags * /
-   vid_mode_flag = SDL_HWSURFACE;
-   if (start_fullscreen) {
-      vid_mode_flag |= SDL_FULLSCREEN;
-   }
-/
-
-// if all this hex scares you, check out SDL_PixelFormatEnumToMasks()!
-SDL_Surface *screen = SDL_CreateRGBSurface(0, 640, 480, 32,
-                                        0x00FF0000,
-                                        0x0000FF00,
-                                        0x000000FF,
-                                        0xFF000000);
-SDL_Texture *sdlTexture = SDL_CreateTexture(sdlRenderer,
-                                            SDL_PIXELFORMAT_ARGB8888,
-                                            SDL_TEXTUREACCESS_STREAMING,
-                                            640, 480);
-
-   if(! (Surface = SDL_SetVideoMode(Vid_width, Vid_height,Vid_depth, vid_mode_flag))) {
-      fprintf (stderr, "SDL: Error: Setting video mode failed\n");
-      SDL_Quit();
-      exit (OSD_NOT_OK);
-   } else {
-      fprintf (stderr, "SDL: Info: Video mode set as %d x %d, depth %d\n", Vid_width, Vid_height, Vid_depth);
-   }
-*/
-
-  /* Offscreen_surface = SDL_CreateRGBSurface(SDL_SWSURFACE,Vid_width,Vid_height,Vid_depth,0,0,0,0); 
-   if(Offscreen_surface==NULL) {
-      SDL_Quit();
-      exit (OSD_NOT_OK);
-   }
-*/
-
    // * Creating event mask * /
    SDL_EventState(SDL_KEYUP, SDL_ENABLE);
    SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
@@ -512,13 +270,10 @@ SDL_Texture *sdlTexture = SDL_CreateTexture(sdlRenderer,
       display_palette_info.blue_mask  = 0x000000FF;
     };
 
-/*
-   / * Hide mouse cursor and save its previous status * /
+
+   // * Hide mouse cursor and save its previous status * /
    cursor_state = SDL_ShowCursor(0);
-   */
-   // Set window title 
-   //SDL_WM_SetCaption(title, NULL);
-   //SDL_SetWindowTitle(title, NULL);
+   
    effect_init2(depth, Vid_depth, Vid_width);
 
    return OSD_OK;
@@ -674,7 +429,7 @@ int sysdep_display_alloc_palette(int totalcolors)
       (Colors + i)->b = 0x00;
    }
    //SDL_SetColors (Offscreen_surface,Colors,0,totalcolors-1);
-   SDL_SetPaletteColors(Offscreen_surface->format->palette, Colors, 0, totalcolors-1);
+ //1  SDL_SetPaletteColors(Offscreen_surface->format->palette, Colors, 0, totalcolors-1);
 
    fprintf (stderr, "SDL: Info: Palette with %d colors allocated\n", totalcolors);
    return 0;
@@ -698,11 +453,11 @@ SDL_SetColors(screen, color, 0, intColors);
 With:
 SDL_ SDL_SetPaletteColors(screen->format->palette, color, 0, intColors); 
 */
-       if ( (!     SDL_SetPaletteColors(Offscreen_surface->format->palette, Colors, 0, 1)) && (! warned)) {
+//1       if ( (!     SDL_SetPaletteColors(Offscreen_surface->format->palette, Colors, 0, 1)) && (! warned)) {
       //if ( (! SDL_SetColors(Offscreen_surface, Colors + pen, pen,1)) && (! warned)) {
-         printf ("Color allocation failed, or > 8 bit display\n");
-         warned = 0;
-      }
+ //1        printf ("Color allocation failed, or > 8 bit display\n");
+  //1       warned = 0;
+   //1   }
    }
 
 
@@ -731,30 +486,7 @@ void sysdep_mouse_poll (void)
 void sysdep_set_leds(int leds) 
 {
 }
-/*
-while (SDL_PollEvent(&event)) {
-			switch (event.type) {
-			case SDL_KEYDOWN:
-				keypressed = event.key.keysym.sym;
-				if (keypressed == QUITKEY)
-				{
-					gameRunning = 0;
-					break;
-				}
 
-				break;
-			case SDL_QUIT: / * if mouse click to close window * /
-			{
-				gameRunning = 0;
-				break;
-			}
-			case SDL_KEYUP: {
-				break;
-			}
-			} / * switch * /
-
-		} / * while SDL_PollEvent * /
-      */
 void sysdep_update_keyboard() 
 {
    
@@ -773,20 +505,26 @@ void sysdep_update_keyboard()
                kevent.press = 1;
 
                // * ALT-Enter: toggle fullscreen * /
-               /*
+               
                if ( event.key.keysym.sym == SDLK_RETURN )
                {
-                  if(event.key.keysym.mod & KMOD_ALT)
-                     SDL_WM_ToggleFullScreen(SDL_GetVideoSurface());
+                  if(event.key.keysym.mod & KMOD_ALT) {
+                     //SDL_WM_ToggleFullScreen(SDL_GetVideoSurface());
+                     SDL_DisplayMode dm;
+                     SDL_GetDesktopDisplayMode(0, &dm);
+                     SDL_RestoreWindow(sdlWindow); //Incase it's maximized...
+                     SDL_SetWindowSize(sdlWindow, dm.w, dm.h + 10);
+                     SDL_SetWindowPosition(sdlWindow, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+                  }
                }
-               */
+               
               if ( event.key.keysym.sym == SDLK_LSHIFT )
                {
-                  fprintf(stderr,"LEFT SHIFT");
+                  fprintf(stderr,"LEFT SHIFT\n");
                }
               if ( event.key.keysym.sym == SDLK_RSHIFT )
                {
-                  fprintf(stderr,"RIGHT SHIFT");
+                  fprintf(stderr,"RIGHT SHIFT\n");
                }
                
             case SDL_KEYUP:
@@ -803,12 +541,17 @@ void sysdep_update_keyboard()
                fprintf (stderr, "Key %s %ssed\n",
                   SDL_GetKeyName(event.key.keysym.sym),
                   kevent.press? "pres":"relea");
+
+                  fprintf(stderr,"scancode: %x\n",kevent.scancode);
+               fprintf(stderr,"scancodesh: %x\n",SDLK_LSHIFT);
+               fprintf(stderr,"scancodelo: %x\n",klookuphigh[SDLK_LSHIFT & 0x1ff]);
+               
 #endif
             //fprintf(stderr,"key4");
                //kevent.unicode = event.key.keysym.unicode;
                kevent.unicode = 0;
                xmame_keyboard_register_event(&kevent);
-            //fprintf(stderr,"key5");
+               fprintf(stderr,"scancode: %x\n",kevent.scancode);
                if(!kevent.scancode)
                   fprintf (stderr, "Unknown symbol 0x%x\n",
                      event.key.keysym.sym);
