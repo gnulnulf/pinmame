@@ -57,6 +57,7 @@ LIBS.xfx        = $(X11LIB) $(JOY_X11_LIBS) -lX11 -lXext -lglide2x
 LIBS.svgafx     = $(X11LIB) -lvga -lvgagl -lglide2x
 LIBS.openstep	= -framework AppKit
 LIBS.sdl        = $(X11LIB) `$(SDL_CONFIG) --libs`
+LIBS.sdl2        = $(X11LIB) `$(SDL2_CONFIG) --libs`
 LIBS.photon2	= -L/usr/lib -lph -lphrender
 
 CFLAGS.x11      = $(X11INC) $(JOY_X11_CFLAGS) $(XINPUT_DEVICES_CFLAGS)
@@ -64,6 +65,7 @@ CFLAGS.xgl      = $(X11INC) $(JOY_X11_CFLAGS) $(GLCFLAGS)
 CFLAGS.xfx      = $(X11INC) $(JOY_X11_CFLAGS) -I/usr/include/glide
 CFLAGS.svgafx   = -I/usr/include/glide
 CFLAGS.sdl      = $(X11INC) `$(SDL_CONFIG) --cflags` -D_REENTRANT
+CFLAGS.sdl2      = $(X11INC) `$(SDL2_CONFIG) --cflags` -D_REENTRANT -g
 CFLAGS.photon2	=
 
 ifdef X11_DGA
@@ -77,7 +79,10 @@ INST.xgl        = doinstallsuid copycab
 INST.xfx        = doinstallsuid
 INST.svgafx     = doinstallsuid
 INST.sdl        = doinstall
+INST.sdl2        = doinstall
 INST.photon2	= doinstall
+
+
 
 # handle X11 display method additonal settings
 ifdef X11_MITSHM
@@ -199,7 +204,7 @@ MY_CFLAGS = $(CFLAGS) $(IL) $(CFLAGS.$(MY_CPU)) \
 	-Dstricmp=strcasecmp -Dstrnicmp=strncasecmp \
 	-DPI=M_PI -DXMAME -DUNIX -DSIGNED_SAMPLES -DCLIB_DECL= \
 	$(COREDEFS) $(SOUNDDEFS) $(CPUDEFS) $(ASMDEFS) $(DEFS)\
-	$(INCLUDES) $(INCLUDE_PATH)
+	$(INCLUDES) $(INCLUDE_PATH) -g
 
 MY_LIBS = $(LIBS) $(LIBS.$(ARCH)) $(LIBS.$(DISPLAY_METHOD)) -lz
 
@@ -270,8 +275,15 @@ MY_LIBS += `artsc-config --libs`
 endif
 
 ifdef SOUND_SDL
-CONFIG  += -DSYSDEP_DSP_SDL `$(SDL_CONFIG) --cflags`
-MY_LIBS += `$(SDL_CONFIG) --libs`
+ifeq ( $(DISPLAY_METHOD) , "sdl2" )
+	CONFIG  += -DSYSDEP_DSP_SDL `$(SDL2_CONFIG) --cflags`
+	MY_LIBS += `$(SDL2_CONFIG) --libs`
+
+else
+	CONFIG  += -DSYSDEP_DSP_SDL `$(SDL_CONFIG) --cflags`
+	MY_LIBS += `$(SDL_CONFIG) --libs`
+
+endif
 endif
 
 ifdef SOUND_WAVEOUT

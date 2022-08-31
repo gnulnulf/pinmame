@@ -115,7 +115,7 @@ CPP    = g++
 
 # If you want to use whatever CFLAGS are currently set in your 
 # environment, then comment this out.
-CFLAGS =
+CFLAGS = 
 
 
 ###########################################################################
@@ -131,7 +131,7 @@ CPPFLAGS += -std=gnu++11
 # this section.
 ###########################################################################
 
-CFLAGS = -fomit-frame-pointer -Wall -Wno-unused
+CFLAGS = -fomit-frame-pointer -Wall -Wno-unused -g
 
 # gcc on x86 with some optimizations
 # CFLAGS = -O2 -Wall -Wno-unused -mcpu=i686 -fomit-frame-pointer \
@@ -200,7 +200,7 @@ ifneq (,$(findstring gcc,$(CC)))
   # CFLAGS += -std=c89
 
   # Enable debugging (e.g., using gdb).
-  # CFLAGS += -ggdb
+  CFLAGS += -ggdb
 
 
   #########################################################################
@@ -618,7 +618,8 @@ ARCH  = linux
 #DISPLAY_METHOD = x11
 
 # SDL library 
-DISPLAY_METHOD = sdl
+#DISPLAY_METHOD = sdl
+DISPLAY_METHOD = sdl2
 
 # SVGALib, only supported under Linux
 # DISPLAY_METHOD = svgalib
@@ -706,6 +707,7 @@ X11_JOYNAME = "Joystick"
 
 # The name of your sdl-config executable
 SDL_CONFIG	= sdl-config
+SDL2_CONFIG	= sdl2-config
 
 
 ##############################################################################
@@ -746,7 +748,7 @@ GLCFLAGS+=-DGLXLIB_NAME='\"libglut.so\"'
 
 # Comment out the next line if you want to compile CPU disassemblers in
 # MAME for debugging.
-# CFLAGS += -DNDEBUG
+CFLAGS += -DNDEBUG
 
 # Uncomment the next lines to build xmame with a built-in debugger (only
 # supported for X11 and SVGALib). Only enable this if you need it -- if you
@@ -762,11 +764,11 @@ endif
 # Choose ELF or a.out
 # ELF settings: No leading underscores + ELF object format.  Tested with
 # Linux/i386.  Also for Solaris/x86, for example.
-ASM_STRIP = src/unix/contrib/porting/strip_
+#ASM_STRIP = src/unix/contrib/porting/strip_
 NASM_FMT  = -f elf
 # a.out settings: Leading underscores + a.out object format.  Tested with
 # netBSD i386.  Also for older Linux installs, FreeBSD, and others.
-# ASM_STRIP = true  # no strip command
+ASM_STRIP = true  # no strip command
 # NASM_FMT  = -f aoutb
 
 ifdef PROC

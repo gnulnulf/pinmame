@@ -102,7 +102,7 @@ CFLAGS.generic    =
 #CFLAGS.aix        = -DSYSDEP_DSP_AIX -I/usr/include/UMS -I/usr/lpp/som/include
 
 #all cflags
-MY_CFLAGS = -I. -I.. -I../.. -I../../mess $(CFLAGS) $(CFLAGS.$(ARCH)) 
+MY_CFLAGS = -I. -I.. -I../.. -I../../mess $(CFLAGS) $(CFLAGS.$(ARCH)) -g
 
 
 ##############################################################################
@@ -137,6 +137,7 @@ $(VID_DIR)/svgalib.o: video-drivers/blit.h video-drivers/blit_core.h video-drive
 $(VID_DIR)/xf86_dga1.o: video-drivers/xf86_dga1.c video-drivers/blit.h video-drivers/blit_core.h effect.h
 $(VID_DIR)/xf86_dga2.o: video-drivers/xf86_dga2.c video-drivers/blit.h video-drivers/blit_core.h effect.h
 $(VID_DIR)/SDL.o: video-drivers/blit.h video-drivers/blit_core.h effect.h
+$(VID_DIR)/SDL2.o: video-drivers/blit.h video-drivers/blit_core.h effect.h
 $(VID_DIR)/xinput.o:  video-drivers/xkeyboard.h video-drivers/glmame.h
 $(VID_DIR)/xinput.o:  video-drivers/xkeyboard.h video-drivers/glmame.h
 $(VID_DIR)/xinput.o:  video-drivers/xkeyboard.h
