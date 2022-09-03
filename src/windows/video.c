@@ -10,6 +10,7 @@
 #ifndef DISABLE_DX7
  #include <ddraw.h>
 #endif
+#include <SDL.h>
 
 // standard C headers
 #include <math.h>
@@ -460,11 +461,79 @@ static BOOL WINAPI devices_enum_callback(GUID *lpGUID, LPSTR lpDriverDescription
 extern char g_fShowWinDMD;
 #endif
 
+SDL_Event event;
+SDL_Rect source, destination, dst;
+SDL_Texture* sdlTexture;
+SDL_Window* sdlWindow;
+SDL_Renderer* sdlRenderer;
+Uint16* pixels = NULL;
+#define OSD_NOT_OK -1
+
+static int Vid_width;
+static int Vid_height;
+static int Vid_depth = 16;
+
 int osd_create_display(const struct osd_create_params *params, UINT32 *rgb_components)
 {
 	struct mame_display dummy_display;
 	double aspect_ratio;
 	int r, g, b;
+
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
+		fprintf(stderr, "SDL2: Error: %s\n", SDL_GetError());
+		return OSD_NOT_OK;
+	}
+	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+	SDL_FlushEvent(SDL_KEYDOWN);
+	
+	Vid_width = params->width;
+	Vid_height = params->height;
+	Vid_depth = params->depth;
+	SDL_Log("depth: %d", params->depth);
+	if (pixels) {
+		free(pixels);
+	}
+	pixels = (Uint16*)malloc(sizeof(Uint16) * Vid_width * Vid_height);
+	/*
+	if ( depth == 16 ) {
+	   pixels = (Uint16 *) malloc (sizeof(Uint16)*Vid_width*Vid_height);
+	}
+	if ( depth == 24 ) {
+	   // ?
+	   pixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
+	}
+	if ( depth == 32 ) {
+	   pixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
+	}
+	*/
+	if (!sdlWindow) {
+		sdlWindow = SDL_CreateWindow("SDL2 test pinmame",
+			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Vid_width, Vid_height, 0);
+		SDL_MaximizeWindow(sdlWindow);
+	}
+	if (!sdlWindow) {
+		fprintf(stderr, "InitSetup failed to create window");
+		exit(OSD_NOT_OK);
+	}
+
+	sdlRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_ACCELERATED);
+	if (!sdlRenderer) {
+		fprintf(stderr, "InitSetup failed to create renderer");
+		exit(OSD_NOT_OK);
+	}
+
+	sdlTexture = SDL_CreateTexture(sdlRenderer,
+		SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, Vid_width, Vid_height);
+	if (!sdlTexture) {
+		fprintf(stderr, "InitSetup failed to create texture");
+		exit(OSD_NOT_OK);
+	}
+
+
+	// clear screen
+	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, 255);
+	SDL_RenderClear(sdlRenderer);
+	SDL_RenderPresent(sdlRenderer);
 
 	logerror("width %d, height %d depth %d\n", params->width, params->height, params->depth);
 
@@ -563,6 +632,9 @@ void osd_close_display(void)
 		cycles_t cps = osd_cycles_per_second();
 		printf("Average FPS: %f (%d frames)\n", (double)cps / (end_time - start_time) * frames_displayed, frames_displayed);
 	}
+	SDL_DestroyRenderer(sdlRenderer);
+	SDL_DestroyWindow(sdlWindow);
+	//SDL_Quit();
 }
 
 
@@ -1037,6 +1109,12 @@ static void render_frame(struct mame_bitmap *bitmap, const struct rectangle *bou
 	profiler_mark(PROFILER_BLIT);
 		win_update_video_window(bitmap, bounds, vector_dirty_pixels);
 	profiler_mark(PROFILER_END);
+
+	//SDL_UpdateTexture(sdlTexture, NULL, bitmap->base, Vid_width * sizeof(Uint16));
+	SDL_UpdateTexture(sdlTexture, NULL, bitmap->base, bitmap->rowbytes);
+	SDL_RenderClear(sdlRenderer);
+	SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
+	SDL_RenderPresent(sdlRenderer);
 
 	// if we're throttling and autoframeskip is on, adjust
 	if (throttle && autoframeskip && frameskip_counter == 0)
