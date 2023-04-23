@@ -175,7 +175,8 @@ int sysdep_create_display(int depth)
 	}
 
    sdlTexture = SDL_CreateTexture(sdlRenderer,
-        SDL_PIXELFORMAT_RGB565, SDL_TEXTUREACCESS_STATIC, Vid_width, Vid_height);
+// CHANGE
+        SDL_PIXELFORMAT_RGB555, SDL_TEXTUREACCESS_STATIC, Vid_width, Vid_height);
    if (!sdlTexture) {
 		fprintf(stderr,"InitSetup failed to create texture");
       exit (OSD_NOT_OK);
@@ -382,8 +383,10 @@ void sdl_update_rgb_direct_32bpp(struct mame_bitmap *bitmap)
 void sysdep_update_display(struct mame_bitmap *bitmap)
 {
    //SDL_Log("sysdep_update_display");
-   (*update_function)(bitmap);
-   SDL_UpdateTexture(sdlTexture, NULL, pixels, Vid_width * sizeof(Uint16));
+//   SDL_Log("bitmap: %d %d %d ", bitmap->width, bitmap->height, bitmap->depth);
+   //(*update_function)(bitmap);
+   //SDL_UpdateTexture(sdlTexture, NULL, pixels, Vid_width * sizeof(Uint16));
+   SDL_UpdateTexture(sdlTexture, NULL, bitmap->base, bitmap->rowbytes);
    SDL_RenderClear(sdlRenderer);
    SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
    SDL_RenderPresent(sdlRenderer);
@@ -538,6 +541,7 @@ void sysdep_update_keyboard()
           //  fprintf(stderr,"key2");
                #ifdef SDL_DEBUG
             //fprintf(stderr,"key3");
+/*
                fprintf (stderr, "Key %s %ssed\n",
                   SDL_GetKeyName(event.key.keysym.sym),
                   kevent.press? "pres":"relea");
@@ -545,6 +549,7 @@ void sysdep_update_keyboard()
                   fprintf(stderr,"scancode: %x\n",kevent.scancode);
                fprintf(stderr,"scancodesh: %x\n",SDLK_LSHIFT);
                fprintf(stderr,"scancodelo: %x\n",klookuphigh[SDLK_LSHIFT & 0x1ff]);
+*/
                
 #endif
             //fprintf(stderr,"key4");
