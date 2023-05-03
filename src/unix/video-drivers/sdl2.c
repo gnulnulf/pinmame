@@ -1,5 +1,5 @@
-/***************************************************************************
-                                          
+/*                                       
+
  This is the SDL XMAME display driver.
  FIrst incarnation by Tadeusz Szczyrba <trevor@pik-nel.pl>,
  based on the Linux SVGALib adaptation by Phillip Ezolt.
@@ -45,10 +45,11 @@
 #include "driver.h"
 #include "SDL-keytable.h"
 #include "effect.h"
+#include "../video.h"
 
 static int Vid_width;
 static int Vid_height;
-static int Vid_depth = 16;
+static int Vid_depth = 8;
 //1 static SDL_Surface* Offscreen_surface;
 static int hardware=1;
 static int mode_number=-1;
@@ -63,12 +64,17 @@ SDL_Rect source, destination, dst;
 SDL_Texture *sdlTexture;
 SDL_Window *sdlWindow ;
 SDL_Renderer* sdlRenderer;
+SDL_Palette* sdlPalette;
+SDL_Surface* sdlSurface;
+SDL_Surface* sdlSurfaceOptimized;
 //SDL_Texture * texture;
+
+//Uint32 *pixels;
 
 #define QUITKEY SDLK_ESCAPE
 #define WIDTH 1024
 #define HEIGHT 768
-Uint16 * pixels = NULL;
+Uint16 * sdlPixels = NULL;
 
 typedef void (*update_func_t)(struct mame_bitmap *bitmap);
 
@@ -105,14 +111,14 @@ void sdl_update_16_to_24bpp(struct mame_bitmap *bitmap);
 void sdl_update_16_to_32bpp(struct mame_bitmap *bitmap);
 void sdl_update_rgb_direct_32bpp(struct mame_bitmap *bitmap);
 
-/*
+
 void plot32(int x,int y ,int red, int green, int blue, int o){
-    pixels[y * Vid_width + x] = (red&0xff)<<24 | (green & 0xff)<<16 | (blue & 0xff)<<8|(o & 0xff) ;
+    sdlPixels[y * Vid_width + x] = (red&0xff)<<24 | (green & 0xff)<<16 | (blue & 0xff)<<8|(o & 0xff) ;
 }
 void plot(int x,int y ,int red, int green, int blue, int o){
-   pixels[y * Vid_width + x] = (red&0x1f)<<11 | (green & 0x2f)<<5 | (blue & 0x1f) ;
+   sdlPixels[y * Vid_width + x] = (red&0x1f)<<11 | (green & 0x2f)<<5 | (blue & 0x1f) ;
 }
-*/
+
 int sysdep_init(void)
 {
    //    SDL_Init(SDL_INIT_VIDEO);
@@ -137,32 +143,20 @@ void sysdep_close(void)
 
 int sysdep_create_display(int depth)
 {
-
    Vid_width = visual_width;
    Vid_height = visual_height;
    Vid_depth = depth ;
 
-   if ( pixels ){
-      free(pixels);
+   if ( sdlPixels ){
+      free(sdlPixels);
    }
-   pixels = (Uint16 *) malloc (sizeof(Uint16)*Vid_width*Vid_height);
-   /*
-   if ( depth == 16 ) {
-      pixels = (Uint16 *) malloc (sizeof(Uint16)*Vid_width*Vid_height);
-   }
-   if ( depth == 24 ) {
-      // ?
-      pixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
-   }
-   if ( depth == 32 ) {
-      pixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
-   }
-   */
+
    if (!sdlWindow) {
          sdlWindow = SDL_CreateWindow(title,
          SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, Vid_width, Vid_height, 0);
          SDL_MaximizeWindow(sdlWindow);
    }
+
    if (!sdlWindow) {
 		fprintf(stderr,"InitSetup failed to create window");
       exit (OSD_NOT_OK);
@@ -174,9 +168,36 @@ int sysdep_create_display(int depth)
       exit (OSD_NOT_OK);
 	}
 
-   sdlTexture = SDL_CreateTexture(sdlRenderer,
+
 // CHANGE
-        SDL_PIXELFORMAT_RGB555, SDL_TEXTUREACCESS_STATIC, Vid_width, Vid_height);
+//        SDL_PIXELFORMAT_RGB555, SDL_TEXTUREACCESS_STATIC, Vid_width, Vid_height);
+   
+   if ( depth == 16 ) {
+      sdlPixels = (Uint16 *) malloc (sizeof(Uint16)*Vid_width*Vid_height);
+      sdlSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, Vid_width, Vid_height, 16, 0, 0, 0, 0);
+      sdlTexture = SDL_CreateTexture(sdlRenderer,
+          SDL_PIXELFORMAT_RGB555,SDL_TEXTUREACCESS_STATIC , Vid_width, Vid_height);
+   }
+   if ( depth == 24 ) {
+      // ?
+      sdlPixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
+      sdlSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, Vid_width, Vid_height, 16, 0, 0, 0, 0);
+   
+      sdlTexture = SDL_CreateTexture(sdlRenderer,
+          SDL_PIXELFORMAT_RGB888,SDL_TEXTUREACCESS_STATIC , Vid_width, Vid_height);
+   }
+   if ( depth == 32 ) {
+      sdlSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, Vid_width, Vid_height, 16, 0, 0, 0, 0);
+   
+      sdlPixels = (Uint32 *) malloc (sizeof(Uint32)*Vid_width*Vid_height);
+            sdlTexture = SDL_CreateTexture(sdlRenderer,
+          SDL_PIXELFORMAT_ARGB8888,SDL_TEXTUREACCESS_STATIC , Vid_width, Vid_height);
+   }
+      if (!sdlSurface) {
+		fprintf(stderr,"InitSetup failed to create sdlSurface");
+      exit (OSD_NOT_OK);
+	}
+
    if (!sdlTexture) {
 		fprintf(stderr,"InitSetup failed to create texture");
       exit (OSD_NOT_OK);
@@ -208,9 +229,9 @@ while(SDL_PollEvent(&event)) {
    fprintf(stderr, "clear events");
 }
 
-
    if( depth == 16 )
    {
+               fprintf (stderr, "SDL: supported Vid_depth=%d in depth=%d\n", Vid_depth,depth);
       switch( Vid_depth ) {
       case 32:
          update_function = &sdl_update_16_to_32bpp;
@@ -220,6 +241,7 @@ while(SDL_PollEvent(&event)) {
          break;
       case 16:
          update_function = &sdl_update_16_to_16bpp;
+//         update_function = &sysdep_update_display;
          break;
       default:
          fprintf (stderr, "SDL: Unsupported Vid_depth=%d in depth=%d\n", Vid_depth,depth);
@@ -232,6 +254,7 @@ while(SDL_PollEvent(&event)) {
    {
       if (Vid_depth == 32)
       {
+               fprintf (stderr, "SDL: supported Vid_depth=%d in depth=%d\n", Vid_depth,depth);
          update_function = &sdl_update_rgb_direct_32bpp; 
       }
       else
@@ -248,14 +271,13 @@ while(SDL_PollEvent(&event)) {
       SDL_Quit();
       exit (OSD_NOT_OK);
    }
+//update_function = &sysdep_update_display;
 
    // * Creating event mask * /
    SDL_EventState(SDL_KEYUP, SDL_ENABLE);
    SDL_EventState(SDL_KEYDOWN, SDL_ENABLE);
    //SDL_EnableUNICODE(1);
    
-
-    // * fill the display_palette_info struct * /
     memset(&display_palette_info, 0, sizeof(struct sysdep_palette_info));
     display_palette_info.depth = Vid_depth;
     if (Vid_depth == 8)
@@ -274,8 +296,79 @@ while(SDL_PollEvent(&event)) {
 
    // * Hide mouse cursor and save its previous status * /
    cursor_state = SDL_ShowCursor(0);
-   
+
    effect_init2(depth, Vid_depth, Vid_width);
+	if (normal_palette)
+	{
+		sysdep_palette_destroy(normal_palette);
+		normal_palette = NULL;
+	}
+
+	if (debug_palette)
+	{
+		sysdep_palette_destroy(debug_palette);
+		debug_palette = NULL;
+	}
+
+/*-- Colours --
+#define CORE_COLOR(x)  Machine->pens[(x)]
+#define COL_DMD        1
+#define COL_DMDOFF     (COL_DMD+0)
+#define COL_DMD33      (COL_DMD+1)
+#define COL_DMD66      (COL_DMD+2)
+#define COL_DMDON      (COL_DMD+3)
+#define COL_DMDCOUNT   4
+#define COL_LAMP       (COL_DMD+COL_DMDCOUNT)
+#define COL_LAMPCOUNT  8
+#define COL_SHADE(x)   (COL_LAMPCOUNT+(x))
+#define COL_DMDAA      (COL_LAMP+COL_LAMPCOUNT*2)
+#define COL_DMDAACOUNT 7
+#define COL_SEGAAON1   (COL_DMDAA+COL_DMDAACOUNT)
+#define COL_SEGAAON2   (COL_SEGAAON1+1)
+#define COL_SEGAAOFF1  (COL_SEGAAON1+2)
+#define COL_SEGAAOFF2  (COL_SEGAAON1+3)
+#define COL_SEGAACOUNT 4
+#define COL_COUNT      (COL_SEGAAON1+COL_SEGAACOUNT)
+*/
+/*  Machine->pens[0]=0x0000;
+  Machine->pens[1]=0x2200; //dmd0
+  Machine->pens[2]=0x55c0; //dmd33
+  Machine->pens[3]=0x88c0; //dmd66
+  Machine->pens[4]=0xffc0; //dmd100
+  Machine->pens[5]=0xffff; //lamp0
+  Machine->pens[6]=0x8800; //lamp1
+  Machine->pens[7]=0x4400; //lamp2
+  Machine->pens[8]=0x2200; //lamp3
+  Machine->pens[9]=0x03c0; //lamp4
+  Machine->pens[10]=0x0;   //lamp5
+  Machine->pens[11]=0x0; //lamp6
+  Machine->pens[12]=0x0;  //lamp7
+  Machine->pens[13]=0xf8f0;  //lamp8
+  Machine->pens[14]=0xf0f8; //lamp9
+  Machine->pens[15]=0xf8f0; //lamp10
+  Machine->pens[16]=0xf0f8; //lamp11
+  Machine->pens[17]=0xf0f8; //lamp12
+  Machine->pens[18]=0xf0f8; //lamp13
+  Machine->pens[19]=0xf0f8; //lamp14
+  Machine->pens[20]=0xf0f8; //lamp15
+  Machine->pens[21]=0x88c0; //segon1
+  Machine->pens[22]=0xffc0; //segon2
+  Machine->pens[23]=0x2200; //segoff1
+  Machine->pens[24]=0x0400; //segoff2
+  Machine->pens[25]=0x0400; //
+  Machine->pens[26]=0x0400; //
+  Machine->pens[27]=0x0400; //
+  Machine->pens[28]=0x0400; //
+  Machine->pens[29]=0x0400; //
+  Machine->pens[30]=0x0ff0; //
+  Machine->pens[31]=0x00ff; //
+
+  
+
+
+  fprintf (stderr, "SDL: machine pens=%d\n", sizeof(Machine->pens));
+
+*/
 
    return OSD_OK;
 }
@@ -307,9 +400,10 @@ static int sdl_mapkey(struct rc_option *option, const char *arg, int priority)
 /* Update routines */
 void sdl_update_16_to_16bpp (struct mame_bitmap *bitmap)
 {
+ //        SDL_Log("sdl_update_16_to_16bpp\n");
 #define SRC_PIXEL  unsigned short
 #define DEST_PIXEL unsigned short
-#define DEST pixels
+#define DEST sdlSurface->pixels
 #define DEST_WIDTH Vid_width
    if(current_palette->lookup)
    {
@@ -329,10 +423,11 @@ void sdl_update_16_to_16bpp (struct mame_bitmap *bitmap)
 
 void sdl_update_16_to_24bpp (struct mame_bitmap *bitmap)
 {
+  //       SDL_Log("sdl_update_16_to_24bpp\n");
 #define SRC_PIXEL  unsigned short
 #define DEST_PIXEL unsigned int
 #define PACK_BITS
-#define DEST pixels
+#define DEST sdlSurface->pixels
 #define DEST_WIDTH Vid_width
    if(current_palette->lookup)
    {
@@ -353,10 +448,11 @@ void sdl_update_16_to_24bpp (struct mame_bitmap *bitmap)
 
 void sdl_update_16_to_32bpp (struct mame_bitmap *bitmap)
 {
+      //   SDL_Log("sdl_update_16_to_32bpp\n");
 #define INDIRECT current_palette->lookup
 #define SRC_PIXEL unsigned short
 #define DEST_PIXEL unsigned int
-#define DEST pixels
+#define DEST sdlSurface->pixels
 #define DEST_WIDTH Vid_width
 #include "blit.h"
 #undef DEST_WIDTH
@@ -368,9 +464,10 @@ void sdl_update_16_to_32bpp (struct mame_bitmap *bitmap)
 
 void sdl_update_rgb_direct_32bpp(struct mame_bitmap *bitmap)
 {
+  //    SDL_Log("sdl_update_rgb_direct_32bpp\n");
 #define SRC_PIXEL unsigned int
 #define DEST_PIXEL unsigned int
-#define DEST pixels
+#define DEST sdlSurface->pixels
 #define DEST_WIDTH Vid_width
 #include "blit.h"
 #undef DEST_WIDTH
@@ -382,13 +479,12 @@ void sdl_update_rgb_direct_32bpp(struct mame_bitmap *bitmap)
 
 void sysdep_update_display(struct mame_bitmap *bitmap)
 {
-   //SDL_Log("sysdep_update_display");
-//   SDL_Log("bitmap: %d %d %d ", bitmap->width, bitmap->height, bitmap->depth);
-   //(*update_function)(bitmap);
-   //SDL_UpdateTexture(sdlTexture, NULL, pixels, Vid_width * sizeof(Uint16));
-   SDL_UpdateTexture(sdlTexture, NULL, bitmap->base, bitmap->rowbytes);
+//   SDL_Log("sysdep_update_display");
+ // SDL_Log("bitmap: %d %d %d %d", bitmap->width, bitmap->height, bitmap->depth ,bitmap->rowbytes);
+   (*update_function)(bitmap);
    SDL_RenderClear(sdlRenderer);
-   SDL_RenderCopy(sdlRenderer, sdlTexture, NULL, NULL);
+   SDL_Texture* texture = SDL_CreateTextureFromSurface(sdlRenderer, sdlSurface);
+   SDL_RenderCopy(sdlRenderer, texture, NULL, NULL);
    SDL_RenderPresent(sdlRenderer);
 } //sysdep_update_display
 
@@ -396,17 +492,25 @@ void sysdep_update_display(struct mame_bitmap *bitmap)
 void sysdep_display_close(void)
 {
 SDL_Log("sysdep_display_close");
+if ( sdlTexture) {
+  SDL_DestroyTexture(sdlTexture);
+}
+SDL_Log("close sdlTexture");
 if ( sdlRenderer) {
   SDL_DestroyRenderer(sdlRenderer);
 }
+SDL_Log("close sdlRenderer");
 if (sdlWindow ) {
 //	SDL_DestroyWindow(sdlWindow);
 }
   // SDL_FreeSurface(Offscreen_surface);
+SDL_Log("close sdlWindow");
 
    /* Restore cursor state */
-   SDL_ShowCursor(cursor_state);
+  // SDL_ShowCursor(cursor_state);
 }
+/*
+
 
 /*
  * In 8 bpp we should alloc pallete - some ancient people  
@@ -422,7 +526,6 @@ int sysdep_display_alloc_palette(int totalcolors)
    if (Vid_depth != 8)
       return 0;
 
-
    Colors = (SDL_Color*) malloc (totalcolors * sizeof(SDL_Color));
    if( !Colors )
       return 1;
@@ -431,10 +534,51 @@ int sysdep_display_alloc_palette(int totalcolors)
       (Colors + i)->g = 0x00;
       (Colors + i)->b = 0x00;
    }
-   //SDL_SetColors (Offscreen_surface,Colors,0,totalcolors-1);
- //1  SDL_SetPaletteColors(Offscreen_surface->format->palette, Colors, 0, totalcolors-1);
+     for (i=0;i<totalcolors;i++) {
+      (Colors + i)->r = (i>>10)&0x1f;
+      (Colors + i)->g = (i>>5)&0x1f;
+      (Colors + i)->b = i&0x1f;
+   }
+    SDL_SetPaletteColors(sdlSurface->format->palette, Colors, 0, totalcolors-1);
+   //SDL_SetColors (sdlSurface,Colors,0,totalcolors-1);
 
    fprintf (stderr, "SDL: Info: Palette with %d colors allocated\n", totalcolors);
+   return 0;
+}
+
+
+
+/*
+ * In 8 bpp we should alloc pallete - some ancient people  
+ * are still using 8bpp displays
+ */
+int sysdep_display_alloc_palette2(int totalcolors)
+{
+   int ncolors;
+   int i;
+   ncolors = totalcolors;
+
+   fprintf (stderr, "SDL: sysdep_display_alloc_palette(%d);\n",totalcolors);
+   if (Vid_depth != 8)
+      return 0;
+
+
+   Colors = (SDL_Color*) malloc (totalcolors * sizeof(SDL_Color));
+   if( !Colors )
+      return 1;
+   fprintf (stderr, "SDL: Colors OK(%d);\n",totalcolors);
+   for (i=0;i<totalcolors;i++) {
+      (Colors + i)->r = (i>>10)&0x1f;
+      (Colors + i)->g = (i>>5)&0x1f;
+      (Colors + i)->b = i&0x1f;
+   }
+   //SDL_SetColors (Offscreen_surface,Colors,0,totalcolors-1);
+ //1  SDL_SetPaletteColors(Offscreen_surface->format->palette, Colors, 0, totalcolors-1);
+      //SDL_Color colors[2] = {{255,0,0,255}, {0,255,0,255}};
+   SDL_SetPaletteColors(sdlSurface->format->palette, Colors, 0, 2);
+ //SDL_SetPaletteColors(sdlPalette, Colors, 0, totalcolors-1);
+ 
+   //fprintf (stderr, "SDL: Info: Palette with %d colors allocated\n", totalcolors);
    return 0;
 }
 
@@ -461,6 +605,7 @@ SDL_ SDL_SetPaletteColors(screen->format->palette, color, 0, intColors);
  //1        printf ("Color allocation failed, or > 8 bit display\n");
   //1       warned = 0;
    //1   }
+     //SDL_SetPaletteColors(sdlPalette, Colors, 0, sizeof(Colors));
    }
 
 
@@ -501,9 +646,10 @@ void sysdep_update_keyboard()
          kevent.press = 0;
          switch (event.type) 
          {
-//            case SDL_TEXTINPUT:
- //              kevent.unicode = event.text.text[0] & 0xff;
-  //             break;
+            case SDL_TEXTINPUT:
+                 kevent.unicode = event.text.text[0] & 0xff;
+                   fprintf(stderr,event.text.text);
+               break;
             case SDL_KEYDOWN:
                kevent.press = 1;
 
@@ -602,11 +748,11 @@ void sysdep_update_keyboard()
 /* added funcions */
 int sysdep_display_16bpp_capable(void)
 {
-   /*
-   const SDL_VideoInfo* video_info;
-   video_info = SDL_GetVideoInfo();
-   return ( video_info->vfmt->BitsPerPixel >=16);
-   */
+   
+ //  const SDL_VideoInfo* video_info;
+  // video_info = SDL_GetVideoInfo();
+   //return ( video_info->vfmt->BitsPerPixel >=16);
+   
   return 1;
 }
 

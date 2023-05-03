@@ -1,6 +1,8 @@
+#include "../keyboard.h"
+
 unsigned char klookup[] = {
 	KEY_NONE            ,   /* SDLK_FIRST           = 0 */
-	KEY_NONE            ,   /* SDLK_NONE            = 1 */
+	KEY_ESC            ,   /* SDLK_NONE            = 1 */
 	KEY_NONE            ,   /* SDLK_NONE            = 2 */
 	KEY_NONE            ,   /* SDLK_NONE            = 3 */
 	KEY_NONE            ,   /* SDLK_NONE            = 4 */
@@ -28,7 +30,7 @@ unsigned char klookup[] = {
 	KEY_NONE            ,   /* SDLK_NONE            = 26 */
 	KEY_ESC             ,   /* SDLK_ESCAPE          = 27 */
 	KEY_NONE            ,   /* SDLK_NONE            = 28 */
-	KEY_NONE            ,   /* SDLK_NONE            = 29 */
+	KEY_TILDE            ,   /* SDLK_NONE            = 29 */
 	KEY_NONE            ,   /* SDLK_NONE            = 30 */
 	KEY_NONE            ,   /* SDLK_NONE            = 31 */
 	KEY_SPACE           ,   /* SDLK_SPACE           = 32 */
@@ -57,18 +59,18 @@ unsigned char klookup[] = {
 	KEY_7               ,   /* SDLK_7               = 55 */
 	KEY_8               ,   /* SDLK_8               = 56 */
 	KEY_9               ,   /* SDLK_9               = 57 */
-	KEY_QUOTE           ,   /* SDLK_COLON           = 58 */
-	KEY_COLON           ,   /* SDLK_SEMICOLON       = 59 */
-	KEY_BACKSLASH2      ,   /* SDLK_LESS            = 60 */
-	KEY_EQUALS          ,   /* SDLK_EQUALS          = 61 */
-	KEY_NONE            ,   /* SDLK_GREATER         = 62 */
-	KEY_NONE            ,   /* SDLK_QUESTION        = 63 */
-	KEY_NONE            ,   /* SDLK_AT              = 64 */
-	KEY_NONE            ,   /* SDLK_NONE            = 65 */
-	KEY_NONE            ,   /* SDLK_NONE            = 66 */
-	KEY_NONE            ,   /* SDLK_NONE            = 67 */
-	KEY_NONE            ,   /* SDLK_NONE            = 68 */
-	KEY_NONE            ,   /* SDLK_NONE            = 69 */
+	KEY_F1           ,   /* SDLK_COLON           = 58 */
+	KEY_F2           ,   /* SDLK_SEMICOLON       = 59 */
+	KEY_F3      ,   /* SDLK_LESS            = 60 */
+	KEY_F4          ,   /* SDLK_EQUALS          = 61 */
+	KEY_F5            ,   /* SDLK_GREATER         = 62 */
+	KEY_F6            ,   /* SDLK_QUESTION        = 63 */
+	KEY_F7            ,   /* SDLK_AT              = 64 */
+	KEY_F8            ,   /* SDLK_NONE            = 65 */
+	KEY_F9            ,   /* SDLK_NONE            = 66 */
+	KEY_F10            ,   /* SDLK_NONE            = 67 */
+	KEY_F11            ,   /* SDLK_NONE            = 68 */
+	KEY_F12            ,   /* SDLK_NONE            = 69 */
 	KEY_NONE            ,   /* SDLK_NONE            = 70 */
 	KEY_NONE            ,   /* SDLK_NONE            = 71 */
 	KEY_NONE            ,   /* SDLK_NONE            = 72 */
@@ -765,7 +767,7 @@ unsigned char klookup[] = {
 
 
 unsigned char klookuphigh[] = {
-KEY_NONE				, //            0x40000000	
+KEY_TILDE			, //            0x40000000	
 KEY_NONE				, //            0x40000001	
 KEY_NONE				, //            0x40000002	
 KEY_NONE				, //            0x40000003	

@@ -3457,25 +3457,37 @@ void mdrawgfxzoom( struct mame_bitmap *dest_bmp,const struct GfxElement *gfx,
 
 void plot_pixel2(struct mame_bitmap *bitmap1,struct mame_bitmap *bitmap2,int x,int y,pen_t pen)
 {
+		fprintf(stderr,"plotpixel2\n");
 	plot_pixel(bitmap1, x, y, pen);
 	plot_pixel(bitmap2, x, y, pen);
 }
 
-static void pp_8(struct mame_bitmap *b,int x,int y,pen_t p)  { ((UINT8 *)b->line[y])[x] = p; }
-static void pp_16(struct mame_bitmap *b,int x,int y,pen_t p)  { ((UINT16 *)b->line[y])[x] = p; }
-static void pp_32(struct mame_bitmap *b,int x,int y,pen_t p)  { ((UINT32 *)b->line[y])[x] = p; }
+static void pp_8(struct mame_bitmap *b,int x,int y,pen_t p)  { ((UINT8 *)b->line[y])[x] = p;
+		fprintf(stderr,"pp8\n");
+ }
+static void pp_16(struct mame_bitmap *b,int x,int y,pen_t p)  { ((UINT16 *)b->line[y])[x] = p;
+		fprintf(stderr,"pp16\n");
+ }
+static void pp_32(struct mame_bitmap *b,int x,int y,pen_t p)  { ((UINT32 *)b->line[y])[x] = p; 
+		fprintf(stderr,"pp32\n");
+}
 
 static pen_t rp_8(struct mame_bitmap *b,int x,int y)  { return ((UINT8 *)b->line[y])[x]; }
-static pen_t rp_16(struct mame_bitmap *b,int x,int y)  { return ((UINT16 *)b->line[y])[x]; }
+static pen_t rp_16(struct mame_bitmap *b,int x,int y)  { return ((UINT16 *)b->line[y])[x]; 
+		fprintf(stderr,"rp16\n");
+}
 static pen_t rp_32(struct mame_bitmap *b,int x,int y)  { return ((UINT32 *)b->line[y])[x]; }
 
 static void pb_8(struct mame_bitmap *b,int x,int y,int w,int h,pen_t p)  { int t=x; while(h-->0){ int c=w; x=t; while(c-->0){ ((UINT8 *)b->line[y])[x] = p; x++; } y++; } }
-static void pb_16(struct mame_bitmap *b,int x,int y,int w,int h,pen_t p)  { int t=x; while(h-->0){ int c=w; x=t; while(c-->0){ ((UINT16 *)b->line[y])[x] = p; x++; } y++; } }
+static void pb_16(struct mame_bitmap *b,int x,int y,int w,int h,pen_t p)  { int t=x; while(h-->0){ int c=w; x=t; while(c-->0){ ((UINT16 *)b->line[y])[x] = p; x++; } y++; }
+		fprintf(stderr,"pb16\n");
+ }
 static void pb_32(struct mame_bitmap *b,int x,int y,int w,int h,pen_t p)  { int t=x; while(h-->0){ int c=w; x=t; while(c-->0){ ((UINT32 *)b->line[y])[x] = p; x++; } y++; } }
 
 
 void set_pixel_functions(struct mame_bitmap *bitmap)
 {
+	fprintf(stderr,"set_pixel_functions");
 	if (bitmap->depth == 8)
 	{
 		bitmap->read = rp_8;
@@ -3501,6 +3513,7 @@ void set_pixel_functions(struct mame_bitmap *bitmap)
 	is_raw[TRANSPARENCY_PENS_RAW]      = 1;
 	is_raw[TRANSPARENCY_PEN_TABLE_RAW] = 1;
 	is_raw[TRANSPARENCY_BLEND_RAW]     = 1;
+
 }
 
 

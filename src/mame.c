@@ -767,6 +767,8 @@ static int vh_open(void)
 	Machine->uifont = builduifont();
 	if (Machine->uifont == NULL)
 		goto cant_build_uifont;
+//Machine->uifont->colortable[0] = 0;
+ // Machine->uifont->colortable[1] = 0xffff;
 
 #ifdef MAME_DEBUG
 	/* if the debugger is enabled, initialize its bitmap and font */

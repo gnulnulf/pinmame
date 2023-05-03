@@ -786,6 +786,7 @@ ifdef LISY_X_FAKE_VIDEO
 CFLAGS += -DLISY_VIDEO
 endif
 
+CFLAGS += -DSDL_DEBUG
 
 ###########################################################################
 # All done.  Type make -f makefile.unix and enjoy xmame/xmess.  ;)
