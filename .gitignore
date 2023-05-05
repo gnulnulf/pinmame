@@ -1,1 +1,9 @@
 .project
+xpinmame.obj
+xpinmamed.obj
+xpinmame.x11
+xpinmame.sdl
+xpinmame.sdl2
+xpinmamed.x11
+xpinmamed.sdl
+xpinmamed.sdl2
