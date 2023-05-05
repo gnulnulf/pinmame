@@ -161,6 +161,13 @@ BY35_ROMEND
 #define input_ports_wildfyfp input_ports_st
 CORE_CLONEDEFNV(wildfyfp,wildfyre,"Wildfyre (Free Play)",1978,"Stern",by35_mST100s,0)
 
+INITGAME(wildfyrc,GEN_STMPU100,dispst6,FLIP_SW(FLIP_L),0,SNDBRD_ST100,0)
+BY17_ROMSTARTx88(wildfyrc,"DRAC_ONE_BALL_CPU_U2.716",CRC(4f760e53) SHA1(42c87e8f41b78f81f025fcb00f7ff8b9098726f6),
+                          "DRAC_ONE_BALL_CPU_U6.716",CRC(bf92e905) SHA1(5f82e30d8d43d307cb10ed0b708acd5f065b4d74))
+BY35_ROMEND
+#define input_ports_wildfyrc input_ports_st
+CORE_CLONEDEFNV(wildfyrc,wildfyre,"Wildfyre (One Ball MOD)",2022,"Stern / Idleman",by35_mST100s,0)
+
 /*--------------------------------
 / Nugent (uses same ROMs as Lectronamo)
 /-------------------------------*/
@@ -196,6 +203,13 @@ BY35_ROMEND
 #define input_ports_draculfp input_ports_st
 CORE_CLONEDEFNV(draculfp,dracula,"Dracula (Free Play)",1979,"Stern",by35_mST100s,0)
 
+INITGAME(draculc,GEN_STMPU100,dispst6,FLIP_SW(FLIP_L),0,SNDBRD_ST100,0)
+BY17_ROMSTARTx88(draculc,"DRAC_ONE_BALL_CPU_U2.716",CRC(4f760e53) SHA1(42c87e8f41b78f81f025fcb00f7ff8b9098726f6),
+                         "DRAC_ONE_BALL_CPU_U6.716",CRC(bf92e905) SHA1(5f82e30d8d43d307cb10ed0b708acd5f065b4d74))
+BY35_ROMEND
+#define input_ports_draculc input_ports_st
+CORE_CLONEDEFNV(draculc,dracula,"Dracula (One Ball MOD)",2022,"Stern / Idleman",by35_mST100s,0)
+
 /*--------------------------------
 / Trident - uses MPU-200 inports
 /-------------------------------*/
@@ -220,6 +234,7 @@ BY35_ROMEND
 #define input_ports_tridenfp input_ports_st
 CORE_CLONEDEFNV(tridenfp,trident,"Trident (Old Free Play)",1979,"Stern",by35_mST100bs,0)
 
+// New version with various changes
 INITGAME(tridentb,GEN_STMPU200,dispst6,FLIP_SW(FLIP_L),0,SNDBRD_ST100B,0)
 ST200_ROMSTART8888(tridentb,"23ctriu1.716",CRC(5827531d) SHA1(416a469f60227815be3fc7cea1c69e6ef88d5596),
                             "23ctriu5.716",CRC(e110e8c5) SHA1(15074ba7b0fd5ea94f48fb010dd70d96dd443116),
@@ -431,6 +446,7 @@ BY35_ROMEND
 #define input_ports_meteorf input_ports_st
 CORE_CLONEDEFNV(meteorf,meteor,"Meteor (Bonus Count Fix, MOD, Free Play rev. 65)",2020,"Stern / Idleman",by35_mST200,0)
 
+// Adds some features, fixes endless bonus bug
 INITGAME(meteorg,GEN_STMPU200,dispst6,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(meteorg,"meteor-v66-u1.716", CRC(55c6bee9) SHA1(8f7a132de597770f245622243c5b462f7553a138),
                            "meteor-v66-u5.716", CRC(7e803d1f) SHA1(62c7f31a0aafe4f9795b77f6a17d7bccd4cd8cdd),
@@ -488,6 +504,7 @@ BY35_ROMEND
 #define input_ports_meteorf7 input_ports_st
 CORE_CLONEDEFNV(meteorf7,meteor,"Meteor (Bonus Count Fix, MOD, 7-Digit, Free Play rev. 75)",2020,"Stern / Idleman",by35_mST200,0)
 
+// Adds some features, fixes endless bonus bug
 INITGAME(meteorg7,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(meteorg7,"meteor-v76-u1.716",CRC(b2757ae2) SHA1(f786e4431e5fa353dd7f0c359b56e5d16deff258),
                             "meteor-v76-u5.716",CRC(c118cb50) SHA1(a525f1b250727238b87279788c68579238adbbc4),
@@ -539,6 +556,7 @@ ST200_ROMSTART8888(galaxyfp,"cpu_u1.716",  CRC(35656b67) SHA1(e1ad9456c561d19220
 BY35_ROMEND
 #define input_ports_galaxyfp input_ports_st
 CORE_CLONEDEFNV(galaxyfp,galaxy,"Galaxy (Free Play)",1980,"Stern",by35_mST200,0)
+
 /*--------------------------------
 / Galaxy (7-digit conversion)
 /-------------------------------*/
@@ -550,6 +568,15 @@ ST200_ROMSTART8888(galaxyb,"cpu_u1b.716",CRC(53f7c0c9) SHA1(c3ee8bbdd1eca7a044c7
 BY35_ROMEND
 #define input_ports_galaxyb input_ports_galaxy
 CORE_CLONEDEFNV(galaxyb,galaxy,"Galaxy (7-digit conversion)",2003,"Stern / Oliver",by35_mST200,0) // rev. 2
+
+INITGAME(galaxyc,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
+ST200_ROMSTART8888(galaxyc,"GALAXYF_708_U1.716",CRC(3ed417b0) SHA1(76c81b7f7ec56bccea8696e57889a453686281e5),
+                           "GALAXYF_708_U5.716",CRC(f90d54e1) SHA1(bbccaf1fafceea73e96a503b853557520fe43a0d),
+                           "GALAXYF_708_U2.716",CRC(4e74e6ec) SHA1(324a85c38d91a7ce74e32c94b849d5db23e35641),
+                           "GALAXYF_708_U6.716",CRC(75630cb2) SHA1(44bd55d2eefc3c0eaeb610ca4c54c1c09dc3d5d6))
+BY35_ROMEND
+#define input_ports_galaxyc input_ports_galaxy
+CORE_CLONEDEFNV(galaxyc,galaxy,"Galaxy (7-Digit conversion, Fixes & modified rules)",2023,"Stern / Idleman",by35_mST200,0)
 
 /*--------------------------------
 / Ali
@@ -565,12 +592,21 @@ CORE_GAMEDEFNV(ali,"Ali",1980,"Stern",by35_mST200,0)
 
 INITGAME(alifp,GEN_STMPU200,dispst6,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(alifp,"fpali_u1.716",CRC(85888cfa) SHA1(286bce3a2e1cbedc224c10d884f5db8b7ffa2a75),
-                       "fpali_u5.716",CRC(52b8e39e) SHA1(267921c2a5636d1f2cc93f0913f005a3e50801a4),
-                       "cpu_u2.716",CRC(9c91d08f) SHA1(a3e8c8e8c2c8b03d86b36eea8c84e5c0a27b8444),
-                       "cpu_u6.716",CRC(7629db56) SHA1(f922d31ec4dd1755da0a24bec4e3fa3a7a9b22fc))
+                         "fpali_u5.716",CRC(52b8e39e) SHA1(267921c2a5636d1f2cc93f0913f005a3e50801a4),
+                         "cpu_u2.716",CRC(9c91d08f) SHA1(a3e8c8e8c2c8b03d86b36eea8c84e5c0a27b8444),
+                         "cpu_u6.716",CRC(7629db56) SHA1(f922d31ec4dd1755da0a24bec4e3fa3a7a9b22fc))
 BY35_ROMEND
 #define input_ports_alifp input_ports_st
 CORE_CLONEDEFNV(alifp,ali,"Ali (Free Play)",1980,"Stern",by35_mST200,0)
+
+INITGAME(alib,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
+ST200_ROMSTART8888(alib,"alif_F76_U1.716",CRC(4fbeee49) SHA1(99617d8e8408ee2728328328176878fe061a1f7e),
+                        "alif_F76_U5.716",CRC(c0a705fb) SHA1(dab391b57f5648cb6a827008af9bbbcc3000ce92),
+                        "alif_F76_U2.716",CRC(3ed8f851) SHA1(229d0c07e597e156c43b5c945ee21c62a091ce25),
+                        "alif_F76_U6.716",CRC(09486559) SHA1(fda5596b26590b565aad3dd802bb042b266d99d7))
+BY35_ROMEND
+#define input_ports_alib input_ports_st
+CORE_GAMEDEFNV(alib,"Ali (7-digit conversion Free Play rev. 76)",2023,"Stern / Idleman",by35_mST200,0)
 
 /*--------------------------------
 / Big Game
@@ -668,6 +704,7 @@ BY35_ROMEND
 #define input_ports_seawitchc input_ports_st
 CORE_CLONEDEFNV(seawitchc,seawitch,"Seawitch (MOD rev. 7)",2021,"Stern / Idleman",by35_mST200,0)
 
+// New version with spinner counter, standup carryover options, and consecutive loop award option
 INITGAME(seawitchd,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(seawitchd,"seawitch_V08-u1.716",CRC(756f8e91) SHA1(3be921799b54525e464a3a92ddef92e116c97038),
                              "seawitch_V08-u5.716",CRC(72ff7b4a) SHA1(34cc77f7971715c0b8ab296d056559fd99150f93),
@@ -716,6 +753,7 @@ BY35_ROMEND
 #define input_ports_cheetah1 input_ports_st
 CORE_CLONEDEFNV(cheetah1,cheetah,"Cheetah (Black cabinet Bonus shot 1/game)",1980,"Stern",by35_mST200,0)
 
+// Slight tweak, 'collect bonus' is only available once per ball once earned. This is sound package #2
 INITGAME(cheetah2,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(cheetah2,"bbcpu_u1.716",     CRC(568db33e) SHA1(a62f48f77dc170d88a5bf2d033e92e409839e749),
                             "bbcpu_u5.716",     CRC(d4e4b50d) SHA1(c59f465ade7512d129a0e60519ec7066db2cbde9),
@@ -725,6 +763,7 @@ BY35_ROMEND
 #define input_ports_cheetah2 input_ports_st
 CORE_CLONEDEFNV(cheetah2,cheetah,"Cheetah (Black cabinet Bonus shot 1/ball)",2011,"Stern / Idleman",by35_mST200,0)
 
+// Slight tweak as previous, but with the roms that have different sounds
 INITGAME(cheetahb2,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(cheetahb2,"b16_mod.u1",       CRC(137a84a0) SHA1(7e6e69eb154afdc2ac7ee935d7d327eee8065fe1),
                              "b16_mod.u5"       ,CRC(ec51118f) SHA1(ec8c1fe76ac6283d43d09fa859d2b32fca45c115),
@@ -757,6 +796,7 @@ BY35_ROMEND
 #define input_ports_quicksfp input_ports_st
 CORE_CLONEDEFNV(quicksfp,quicksil,"Quicksilver (Free Play)",1980,"Stern",by35_mST200,0)
 
+// New version with spinner counters and drop sweep awards
 INITGAME(quicksib,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(quicksib,"QS-V07D_u1.716",CRC(69bbe180) SHA1(e69d8affc98f8993553697f6be702f86583f6f87),
                             "QS-V07D_u5.716",CRC(bdb8af82) SHA1(5222355e99f0dc28fd3c8df18c4cb04407702084),
@@ -832,6 +872,7 @@ BY35_ROMEND
 #define input_ports_flight2m input_ports_st
 CORE_CLONEDEFNV(flight2m,flight2k,"Flight 2000 (modified rules rev. 3335)",2020,"Stern / Idleman",by35_mST200v,0)
 
+// New version to eliminate ball relocking during multiball and add speech and other gameplay changes
 INITGAME(flight2mb,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300V,0)
 ST200_ROMSTART8888(flight2mb,"f2k-3347M-CPU_U1.716", CRC(fd1c738f) SHA1(527c32a03a1274ca18190ec67a45fc9bb76ef648),
                              "f2k-3347M-CPU_U5.716", CRC(1e28df6c) SHA1(d6b831d454c419366d687b5beea56aa634d6b2dd),
@@ -894,6 +935,7 @@ BY35_ROMEND
 #define input_ports_ninebalc input_ports_st
 CORE_CLONEDEFNV(ninebalc,nineball,"Nine Ball (Ball handling MOD beta19)",2021,"Stern / Idleman",by35_mST200,0)
 
+// New version to fix many bugs
 INITGAME(ninebald,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(ninebald,"cpu_u1d.716",CRC(61e3ca99) SHA1(aac60b9554bc1d245be78c5955b414420a158b8e),
                             "cpu_u5d.716",CRC(d20be57a) SHA1(2779fd95e642b8a1226b9c9195834b5023f21d02),
@@ -969,6 +1011,21 @@ BY35_ROMEND
 #define input_ports_lightnib input_ports_st
 CORE_CLONEDEFNV(lightnib,lightnin,"Lightning (Free Play & MOD rev. 19)",2021,"Stern / Idleman",by35_mST200v,0)
 
+// rev 22: New version to eliminate ball relocking during multiball
+
+// rev 23: New version, eliminates ball relocking during multiball and resets standup targets to half completed if you complete all without balls locked
+
+INITGAME(lightnic,GEN_STMPU200,dispLightnin,FLIP_SW(FLIP_L),0,SNDBRD_ST300V,0)
+ST200_ROMSTART8888(lightnic,"light_25-u1.716",CRC(812b6521) SHA1(5ac4f9160c180b2022a49f03ee36575cbdae7382),
+                            "light_25-u5.716",CRC(8d6b87c4) SHA1(efae61490855bee8ae3883868607ed5b17e25c0f),
+                            "light_25-u2.716",CRC(b73f68a6) SHA1(e7ffb42ed27d9704d38a25f397f54ded5c4e2756),
+                            "light_25-u6.716",CRC(3c0efce0) SHA1(27c9d03de96732b44c52c89dd45b80152df4eec3))
+VSU100_SOUNDROM_U9U10(      "snd_u9.716",     CRC(00ffa77c) SHA1(242efd800731a7f84369c6ce54298d0a227dd8ba),
+                            "snd_u10.716",    CRC(80fe9158) SHA1(20fcdb4c09b25e494f02bbfb20c07ff2870d5798))
+BY35_ROMEND
+#define input_ports_lightnic input_ports_st
+CORE_CLONEDEFNV(lightnic,lightnin,"Lightning (Free Play & MOD rev. 25)",2022,"Stern / Idleman",by35_mST200v,0)
+
 /*--------------------------------
 / Split Second
 /-------------------------------*/
@@ -1019,6 +1076,7 @@ BY35_ROMEND
 #define input_ports_catacofp input_ports_st
 CORE_CLONEDEFNV(catacofp,catacomb,"Catacomb (Free Play)",1981,"Stern",by35_mST200v,0)
 
+// No after ball bagatelle round, for tournaments.  Not very polished, quick n dirty hack
 INITGAME(cataconb,GEN_STMPU200,dispst7,FLIP_SW(FLIP_L),0,SNDBRD_ST300V,0)
 ST200_ROMSTART8888(cataconb,"cat_NOBAGATELLE-u1.716",CRC(bf674561) SHA1(e66fdf9f8a0d5f51cb45550f46f936f4377e34da),
                             "cat_NOBAGATELLE-u5.716",CRC(721f3cbe) SHA1(96b21157874e645d7ea26ddacba36ccf38ecf206),
@@ -1116,6 +1174,7 @@ BY35_ROMEND
 #define input_ports_dragfis3b input_ports_st
 CORE_CLONEDEFNV(dragfis3b,dragfist,"Dragonfist (MOD 3 rev. 1109)",2020,"Stern / Idleman",by35_mST200,0)
 
+// Rewrite to eliminate some bugs and add some tournmament friendly options
 INITGAME(dragfis14,GEN_STMPU200,dispDragfist,FLIP_SW(FLIP_L),0,SNDBRD_ST300,0)
 ST200_ROMSTART8888(dragfis14,"fisted_VB14-u1.716",CRC(92c3e3d6) SHA1(9b09b9685b34d93c804acd0d1693d7803360bd4f),
                              "fisted_VB14-u5.716",CRC(9b0f6210) SHA1(62dd7dbe1f714e58aaa927bb798bfee80f241635),

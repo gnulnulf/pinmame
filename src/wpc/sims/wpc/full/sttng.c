@@ -1,3 +1,5 @@
+// license:BSD-3-Clause
+
 /********************************************************************************************
  Williams Star Trek Next Generation (1994) Pinball Simulator
 
@@ -61,23 +63,23 @@ static int  sttng_handleBallState(sim_tBallStatus *ball, int *inports);
 static void sttng_handleMech(int mech);
 static void init_sttng(void);
 static void sttng_drawMech(BMTYPE **line);
-static int sttng_getMech(int mechNo);
+static int  sttng_getMech(int mechNo);
 static void sttng_drawStatic(BMTYPE **line);
-static int sttng_getSol(int solNo);
+static int  sttng_getSol(int solNo);
 
 /*-----------------------
   local static variables
  ------------------------*/
 static struct {
-  int TdroptargetPos;    /* Top Drop Target Position */
-  int LgunPos;			 /* Left Gun Position  */
-  int LgunDir;		     /* Left Current Direction of Gun Movement*/
-  int LgunLDir;			 /* Left Last direction of Gun Movement*/
-  int RgunPos;			 /* Right Gun Position  */
-  int RgunDir;		     /* Right Current Direction of Gun Movement*/
-  int RgunLDir;			 /* Right Last direction of Gun Movement*/
-  int UTDivPos;			 /* Keep Track of Under Playfield Top Diverter*/
-  int UBDivPos;			 /* Keep Track of Under Playfield Bott Diverter*/
+  int TdroptargetPos;	/* Top Drop Target Position */
+  int LgunPos;			/* Left Gun Position  */
+  int LgunDir;			/* Left Current Direction of Gun Movement*/
+  int LgunLDir;			/* Left Last direction of Gun Movement*/
+  int RgunPos;			/* Right Gun Position  */
+  int RgunDir;			/* Right Current Direction of Gun Movement*/
+  int RgunLDir;			/* Right Last direction of Gun Movement*/
+  int UTDivPos;			/* Keep Track of Under Playfield Top Diverter*/
+  int UBDivPos;			/* Keep Track of Under Playfield Bott Diverter*/
   int TTDivPos;			/* Keep Track of Top Diverter*/
   } locals;
 
@@ -127,45 +129,45 @@ WPC_INPUT_PORTS_END
 
 #define swBuyIn		11
 #define swFire		12
-#define swStart      	13
-#define swTilt       	14
-#define swLOut	 	15
+#define swStart		13
+#define swTilt		14
+#define swLOut		15
 #define swLIn		16
 #define swRIn		17
 #define swROut		18
 
-#define swSlamTilt   	21
-#define swCoinDoor   	22
-#define swCRampExit    	23
+#define swSlamTilt	21
+#define swCoinDoor	22
+#define swCRampExit	23
 #define swNotUsed	24
 #define swRRampEnt	25
-#define	swCBankL	26
-#define	swCBankC	27
+#define swCBankL	26
+#define swCBankC	27
 #define swCBankR	28
 
 /*All switchs in this column are optos*/
-#define	swBorgLock	31
-#define	swULGun2	32
-#define	swURGun2	33
-#define	swRGunShooter	34
-#define	swULLock2	35
-#define	swULGun1	36
-#define	swURGun1	37
-#define	swLGunShooter	38
+#define swBorgLock	31
+#define swULGun2	32
+#define swURGun2	33
+#define swRGunShooter	34
+#define swULLock2	35
+#define swULGun1	36
+#define swURGun1	37
+#define swLGunShooter	38
 
 /*All switchs in this column are optos*/
-#define swULLock1     	41
+#define swULLock1	41
 #define swULLock3	42
 #define swULLock4	43
 #define swLOuterLoop	44
 #define swUTopHole	45
 #define swULeftHole	46
-#define swUBorgHole  	47
+#define swUBorgHole	47
 #define swBorgEntry	48
 
 #define swLBankTop	51
 #define swLBankMid	52
-#define swLBankBott    	53
+#define swLBankBott	53
 #define swRBankTop	54
 #define swRBankMid	55
 #define swRBankBott	56
@@ -174,39 +176,39 @@ WPC_INPUT_PORTS_END
 
 /*All switchs in this column are optos -except last switch!-*/
 #define swTrough1	61
-#define swTrough2    	62
-#define swTrough3    	63
+#define swTrough2	62
+#define swTrough3	63
 #define swTrough4	64
 #define swTrough5	65
 #define swTrough6	66
 #define swTroughUp	67
-#define swShooter      	68
+#define swShooter	68
 
 #define swJet1		71
-#define swJet2	    	72
-#define swJet3	  	73
-#define swRSling    	74
+#define swJet2		72
+#define swJet3		73
+#define swRSling	74
 #define swLSling	75
 #define swMultL		76
-#define swMultC       	77
-#define swMultR       	78
+#define swMultC		77
+#define swMultR		78
 
 #define swTime		81
-#define swRift	    	82
-#define swLRampExit    	83
-#define swQ	  	84
+#define swRift		82
+#define swLRampExit	83
+#define swQ			84
 #define swLShuttle	85
 #define swRShuttle	86
-#define swRRampExit    	87
-#define swLRampEnt     	88
+#define swRRampExit	87
+#define swLRampEnt	88
 
 /*Since normal switches end at 88, we need custom ones!*/
 
 /*91 Not Used*/
-#define swLGunMark    	CORE_CUSTSWNO(1,2)		//92
+#define swLGunMark	CORE_CUSTSWNO(1,2)		//92
 /*93 Not Used*/
 #define swRGunHome	CORE_CUSTSWNO(1,5)		//95
-#define swRGunMark    	CORE_CUSTSWNO(1,6)		//96
+#define swRGunMark	CORE_CUSTSWNO(1,6)		//96
 #define swLGunHome	CORE_CUSTSWNO(1,7)		//97
 /*98 Not Used*/
 
@@ -217,40 +219,40 @@ WPC_INPUT_PORTS_END
 /*---------------------
 / Solenoid definitions
 /----------------------*/
-#define sLGunKicker    	1
-#define sRGunKicker    	2
-#define sLGunPopper  	3
+#define sLGunKicker		1
+#define sRGunKicker		2
+#define sLGunPopper		3
 #define sRGunPopper		4
 #define sLPopper		5
 #define sPlunger		6
-#define sKnocker       	7
-#define sKickBack   	8
-#define sLSling      	9
-#define sRSling      	10
-#define sTrough		11
-#define sJet1         	12
-#define sJet2        	13
-#define sJet3        	14
+#define sKnocker		7
+#define sKickBack		8
+#define sLSling			9
+#define sRSling			10
+#define sTrough			11
+#define sJet1			12
+#define sJet2			13
+#define sJet3			14
 #define sTopDiverter	15
-#define sBorgKicker	16
-#define sLGunMotor    	17
-#define sRGunMotor    	18
+#define sBorgKicker		16
+#define sLGunMotor		17
+#define sRGunMotor		18
 /*19 Not Used*/
 
 /*We need custom solenoids, since regular ones end at #36*/
-#define sUDiverterTop  	CORE_CUSTSOLNO(1)	//37
-#define sUDiverterBott 	CORE_CUSTSOLNO(2)	//38
-#define sTopDropUp     	CORE_CUSTSOLNO(3)	//39
-#define sTopDropDown   	CORE_CUSTSOLNO(4)	//40
+#define sUDiverterTop	CORE_CUSTSOLNO(1)	//37
+#define sUDiverterBott	CORE_CUSTSOLNO(2)	//38
+#define sTopDropUp		CORE_CUSTSOLNO(3)	//39
+#define sTopDropDown	CORE_CUSTSOLNO(4)	//40
 #define sfRomulan		CORE_CUSTSOLNO(5)	//41
 #define sfRRamp			CORE_CUSTSOLNO(6)	//42
 
 
-#define GUN_HOME    (8*2)   /*End Position of Gun Home*/
-#define GUN_MARK    (8*7)   /* Where is Mark Switch Triggered*/
-#define GUN_END	    (8*20)  /*# of Times to increment rotation until we stop and turnaround!*/
-#define GUN_LEFT    0
-#define GUN_RIGHT   1
+#define GUN_HOME	(8*2)   /*End Position of Gun Home*/
+#define GUN_MARK	(8*7)   /* Where is Mark Switch Triggered*/
+#define GUN_END		(8*20)  /*# of Times to increment rotation until we stop and turnaround!*/
+#define GUN_LEFT	0
+#define GUN_RIGHT	1
 #define DT_UP		0
 #define DT_DOWN		1
 #define DIV_OPEN	0
@@ -270,12 +272,12 @@ enum {stTrough1=SIM_FIRSTSTATE, stTrough2, stTrough3, stTrough4, stTrough5, stTr
 	  stLRampEnt,stLRampExit, stCRampExit, stRRampEnt, stRRampExit,
 	  stLOut, stROut, stLIn, stRIn, stLLoopUp1, stSpinner, stLLoopUp2, stRLoopDn, stRLoopUp,
 	  stTDropTarget, stTDropTarget2, stMultL, stMultC, stMultR,
-      stJet1, stJet2, stJet3,
-      stTopHole, stCenterHole, stLeftHole,  stTopDiverter, stBottDiverter, stDiverter,
+	  stJet1, stJet2, stJet3,
+	  stTopHole, stCenterHole, stLeftHole,  stTopDiverter, stBottDiverter, stDiverter,
 	  stTLPopper4,stTLPopper3,stTLPopper2, stTLPopper1,
 	  stBLPopper, stBLPopper2,stRPopper2, stRPopper, stLGunLoaded, stRGunLoaded,
 	  stBorgEntry, stBorgLock, stNZone
-      };
+	  };
 
 /********************************************************************************************************
    The following is a list of all possible game states.....
@@ -304,73 +306,73 @@ enum {stTrough1=SIM_FIRSTSTATE, stTrough2, stTrough3, stTrough4, stTrough5, stTr
 	STSPINNER        Switch is a spinner
 *******************************************************************************************************/
 static sim_tState sttng_stateDef[] = {
-  {"Not Installed",    0,0,           0,        stDrain,     0,0,0,SIM_STNOTEXCL},
+  {"Not Installed",     0,0,            0,        stDrain,       0,0,0,SIM_STNOTEXCL},
   {"Moving"},
-  {"Playfield",               0,0,           0,        0,           0,0,0,SIM_STNOTEXCL},
+  {"Playfield",         0,0,            0,        0,             0,0,0,SIM_STNOTEXCL},
 
-  {"Trough 1",			1,swTrough1,	0,	  stTrough2,   1},
-  {"Trough 2",			1,swTrough2,	0,        stTrough3,   1},
-  {"Trough 3",			1,swTrough3,	0,        stTrough4,   1},
-  {"Trough 4",			1,swTrough4,	0,        stTrough5,   1},
-  {"Trough 5",			1,swTrough5,	0,        stTrough6,   1},
-  {"Trough 6",			1,swTrough6,	sTrough,  stTrough,    1},
-  {"Trough Up",			1,swTroughUp,   0,        stShooter,   1},
+  {"Trough 1",			1,swTrough1,    0,        stTrough2,     1},
+  {"Trough 2",			1,swTrough2,    0,        stTrough3,     1},
+  {"Trough 3",			1,swTrough3,    0,        stTrough4,     1},
+  {"Trough 4",			1,swTrough4,    0,        stTrough5,     1},
+  {"Trough 5",			1,swTrough5,    0,        stTrough6,     1},
+  {"Trough 6",			1,swTrough6,    sTrough,  stTrough,      1},
+  {"Trough Up",			1,swTroughUp,   0,        stShooter,     1},
 
-  {"Shooter",		    	1,swShooter,   sPlunger,  stLaunchWire, 1},
-  {"Launch Wire",		1,0,	       0,	 stRLoopUp,   10},
-  {"Drain",			1,0,           0,        stTrough1,   0,0,0,SIM_STNOTEXCL},
+  {"Shooter",			1,swShooter,    sPlunger, stLaunchWire,  1},
+  {"Launch Wire",		1,0,            0,        stRLoopUp,    10},
+  {"Drain",				1,0,            0,        stTrough1,     0,0,0,SIM_STNOTEXCL},
 
-  {"L. Ramp Enter",		1,swLRampEnt,   0,       stDiverter,    5},
-  {"L. Ramp Exit",		1,swLRampExit,  0,       stRIn,        15},
-  {"C. Ramp Exit",		1,swCRampExit,  0,       stLIn,        10},
-  {"R. Ramp Enter",		1,swRRampEnt,   0,       stRRampExit,   5},
-  {"R. Ramp Exit",		1,swRRampExit,  0,       stRIn,        10},
+  {"L. Ramp Enter",		1,swLRampEnt,   0,        stDiverter,    5},
+  {"L. Ramp Exit",		1,swLRampExit,  0,        stRIn,        15},
+  {"C. Ramp Exit",		1,swCRampExit,  0,        stLIn,        10},
+  {"R. Ramp Enter",		1,swRRampEnt,   0,        stRRampExit,   5},
+  {"R. Ramp Exit",		1,swRRampExit,  0,        stRIn,        10},
 
-  {"Left Outlane",      1,swLOut,       0,        stDrain,   10, sKickBack, stFree},
-  {"Right Outlane",     1,swROut,       0,        stDrain,   10},
-  {"Left  Inlane",     1,swLIn,         0,        stFree,      5},
-  {"Right Inlane",     1,swRIn,         0,        stFree,      5},
+  {"Left Outlane",      1,swLOut,       0,        stDrain,      10, sKickBack, stFree},
+  {"Right Outlane",     1,swROut,       0,        stDrain,      10},
+  {"Left Inlane",       1,swLIn,         0,       stFree,        5},
+  {"Right Inlane",      1,swRIn,         0,       stFree,        5},
 
-  {"Left Loop",        1,0,		0,        stSpinner,	3},
-  {"Spinner",          1,swSpinner,	0,	  stLLoopUp2,	5, 0,0,SIM_STSPINNER},
-  {"Left Loop",        1,swLOuterLoop,	0,	  stRLoopDn,	10},
-  {"Right Loop",       1,swROuterLoop,	0,        stFree,	10},	/*Right Loop Coming Down*/
-  {"Right Loop",       1,swROuterLoop,	0,        stTDropTarget,10},	/*Right Loop Going Up */
+  {"Left Loop",         1,0,             0,       stSpinner,     3},
+  {"Spinner",           1,swSpinner,     0,       stLLoopUp2,    5, 0,0,SIM_STSPINNER},
+  {"Left Loop",         1,swLOuterLoop,  0,       stRLoopDn,    10},
+  {"Right Loop",        1,swROuterLoop,  0,       stFree,       10}, /*Right Loop Coming Down*/
+  {"Right Loop",        1,swROuterLoop,  0,       stTDropTarget,10}, /*Right Loop Going Up */
 
-  {"Top Drop Target",	1,0, 0, 0, 0},
-  {"Top Drop Target",	1,swTDropTarget,0,	stMultL,	5},
-  {"Rollover 1",	1,swMultL,	0,	stJet2,		5},
-  {"Rollover 2",	1,swMultC,	0,	stJet3,		5},
-  {"Rollover 3",	1,swMultR,	0,	stJet1,		5},
-  {"Jet Bumper 1",	1,swJet1, 	0,	stFree, 	5},
-  {"Jet Bumper 2",	1,swJet1, 	0, 	stFree, 	5},
-  {"Jet Bumper 3",	1,swJet1, 	0, 	stFree, 	5},
+  {"Top Drop Target",   1,0, 0, 0, 0},
+  {"Top Drop Target",   1,swTDropTarget, 0,       stMultL,       5},
+  {"Rollover 1",        1,swMultL,       0,       stJet2,        5},
+  {"Rollover 2",        1,swMultC,       0,       stJet3,        5},
+  {"Rollover 3",        1,swMultR,       0,       stJet1,        5},
+  {"Jet Bumper 1",      1,swJet1,        0,       stFree,        5},
+  {"Jet Bumper 2",      1,swJet1,        0,       stFree,        5},
+  {"Jet Bumper 3",      1,swJet1,        0,       stFree,        5},
 
 		/*Under Bott Diverter firing, Goes to L. Gun, otherwise L.Popper
 		  Under Top Diverter firing, Goes to R. Gun
 		*/
 
-  {"Top Hole",		1,swUTopHole,	0,			stLeftHole,	 2},	/*Top Holes Next passes Left hole Switch*/
-  {"Center Hole",	1,swUBorgHole,	0,			stTopDiverter,   2},	/*Center Next goes to Top Diverter*/
-  {"Left Hole",		1,swULeftHole,	0,			stTopDiverter,   2},	/*Left Next goes to Top Diverter*/
-  {"U.Top Diverter",	1,0,		0,			0,	 0},
-  {"U.Bott Diverter",	1,0,		0,			0,	 0},
-  {"Top Diverter",	1,0,		0,			0,	 0},
+  {"Top Hole",          1,swUTopHole,    0,       stLeftHole,    2}, /*Top Holes Next passes Left hole Switch*/
+  {"Center Hole",       1,swUBorgHole,   0,       stTopDiverter, 2}, /*Center Next goes to Top Diverter*/
+  {"Left Hole",         1,swULeftHole,   0,       stTopDiverter, 2}, /*Left Next goes to Top Diverter*/
+  {"U.Top Diverter",    1,0,             0,       0,             0},
+  {"U.Bott Diverter",   1,0,             0,       0,             0},
+  {"Top Diverter",      1,0,             0,       0,             0},
 
-  {"L. Popper 4",	1, swULLock4,	0,			stTLPopper3,	 1},	/*TLPopper4*/
-  {"L. Popper 3",	1, swULLock3,	0,			stTLPopper2,	 1},	/*TLPopper3*/
-  {"L. Popper 2",	1, swULLock2,	0,			stTLPopper1,	 1},	/*TLPopper2*/
-  {"L. Popper 1",	1, swULLock1,   sLPopper,		stRIn,			 1},	/*TLPopper1*/
+  {"L. Popper 4",       1,swULLock4,     0,       stTLPopper3,   1}, /*TLPopper4*/
+  {"L. Popper 3",       1,swULLock3,     0,       stTLPopper2,   1}, /*TLPopper3*/
+  {"L. Popper 2",       1,swULLock2,     0,       stTLPopper1,   1}, /*TLPopper2*/
+  {"L. Popper 1",       1,swULLock1,     sLPopper,stRIn,         1}, /*TLPopper1*/
 
-  {"L. Gun 2",		1, swULGun2,	0,			stBLPopper2,	1}, /*BLPopper*/
-  {"L. Gun 1",		1, swULGun1,	sLGunPopper,		stLGunLoaded, 	1}, /*BLPopper2*/
-  {"R. Gun 2",		1, swURGun2,	0,			stRPopper,	1}, /*RPopper2*/
-  {"R. Gun 1",		1, swURGun1,	sRGunPopper,		stRGunLoaded,	1}, /*RPopper*/
-  {"L. Gun Loaded",	1, swLGunShooter, sLGunKicker,  	stFree,		2},
-  {"R. Gun Loaded",	1, swRGunShooter, sRGunKicker,		stFree,		2},
-  {"Borg Entry",	1, swBorgEntry,   0, 			stBorgLock,	1},
-  {"Borg Lock",		1, swBorgLock,	  sBorgKicker,		stFree,		2},
-  {"Neutral Zone Hole", 1, swCBankC,	0,			stLeftHole,	1}, /*Neutral Zone fires middle bank target, then fires left hole switch*/
+  {"L. Gun 2",          1,swULGun2,      0,       stBLPopper2,   1}, /*BLPopper*/
+  {"L. Gun 1",          1,swULGun1,      sLGunPopper,stLGunLoaded,1},/*BLPopper2*/
+  {"R. Gun 2",          1,swURGun2,      0,       stRPopper,     1}, /*RPopper2*/
+  {"R. Gun 1",          1,swURGun1,      sRGunPopper,stRGunLoaded,1},/*RPopper*/
+  {"L. Gun Loaded",     1,swLGunShooter, sLGunKicker,stFree,     2},
+  {"R. Gun Loaded",     1,swRGunShooter, sRGunKicker,stFree,     2},
+  {"Borg Entry",        1,swBorgEntry,   0,       stBorgLock,    1},
+  {"Borg Lock",         1,swBorgLock,    sBorgKicker,stFree,     2},
+  {"Neutral Zone Hole", 1,swCBankC,      0,       stLeftHole,    1}, /*Neutral Zone fires middle bank target, then fires left hole switch*/
   {0}
 };
 
@@ -422,7 +424,7 @@ static int sttng_handleBallState(sim_tBallStatus *ball, int *inports) {
 		else
 			return setState(stBorgEntry,3);
 		break;
-  	}
+	}
   return 0;
 }
 
@@ -489,7 +491,7 @@ static core_tLampDisplay sttng_lampPos = {
 { 0, 0 }, /* top left */
 {39, 29}, /* size */
 {
- {1,{{23, 5,YELLOW}}},{1,{{25, 4,YELLOW}}},{1,{{26,11,WHITE}}},{1,{{28,12,WHITE}}},
+ {1,{{23, 5,YELLOW}}},{1,{{25, 4,YELLOW}}},{1,{{28,12,WHITE}}},{1,{{26,11,WHITE}}}, // The latter 2 (Time Rift and Worm Hole) lamps are swapped compared to manual?
  {1,{{27, 3,YELLOW}}},{1,{{29,14,RED}}},{1,{{37,14,ORANGE}}},{1,{{28,16,WHITE}}},
  {1,{{24,12,WHITE}}},{1,{{23,14,WHITE}}},{1,{{24,16,WHITE}}},{1,{{23,23,YELLOW}}},
  {1,{{25,24,YELLOW}}},{1,{{26,14,WHITE}}},{1,{{26,17,WHITE}}},{1,{{27,25,YELLOW}}},
@@ -541,7 +543,7 @@ static wpc_tSamSolMap sttng_SamSolMap[] = {
   Code to draw the mechanical objects, and their states!
 ---------------------------------------------------------*/
 static void sttng_drawMech(BMTYPE **line) {
-  core_textOutf(30, 0,BLACK,"Top Drop Target: %-6s", locals.TdroptargetPos==DT_UP?"Up":"Down");
+  core_textOutf(30,  0,BLACK,"Top Drop Target: %-6s", locals.TdroptargetPos==DT_UP?"Up":"Down");
   core_textOutf(30, 10,BLACK,"Left Gun: %3d", locals.LgunPos);
   core_textOutf(30, 20,BLACK,"Right Gun: %3d", locals.RgunPos);
 }
@@ -567,6 +569,7 @@ static void sttng_drawStatic(BMTYPE **line) {
 /*-----------------
 /  ROM definitions
 /------------------*/
+// normal L-1 sound ROMs
 #define ST_SND \
 DCS_SOUNDROM7x("ng_u2_s.l1",CRC(c3bd7bf5) SHA1(2476ff90232a52d667a407fac81ee4db028b94e5), \
                "ng_u3_s.l1",CRC(9456cac7) SHA1(83e415e0f21bb5418f3677dbc13433e056c523ab), \
@@ -576,40 +579,29 @@ DCS_SOUNDROM7x("ng_u2_s.l1",CRC(c3bd7bf5) SHA1(2476ff90232a52d667a407fac81ee4db0
                "ng_u7_s.l1",CRC(d81b39f0) SHA1(3443e7327c755b85a5b390f7fcd0e9923890425a), \
                "ng_u8_s.l1",CRC(c9fb065e) SHA1(c148178ee0ea787acc88078db01d17073e75fdc7))
 
-WPC_ROMSTART(sttng,l7,"trek_lx7.rom",0x80000,CRC(d439fdbb) SHA1(12d1c72cd6cc18db53e51ebb4c1e55ca9bcf9908)) ST_SND WPC_ROMEND
-WPC_ROMSTART(sttng,d7,"trek_dx7.rom",0x80000,CRC(e0894fab) SHA1(673695d9a0533cccdc842489e875223fcd8ccbd9)) ST_SND WPC_ROMEND
+// special L-1 sound ROMs
+#define ST_SPECIAL_SND \
+DCS_SOUNDROM7x("ngs_u2.rom",CRC(e9fe68fe) SHA1(3d7631aa5ddd52f7c3c00cd091e212430faea249), \
+               "ngs_u3.rom",CRC(368cfd89) SHA1(40ddc12b2cabbcf73ababf753f3a2fd4bcc10737), \
+               "ngs_u4.rom",CRC(8e79a513) SHA1(4b763d7445acd921a0a6d64d18b5df8ff9e3257e), \
+               "ngs_u5.rom",CRC(46049eb0) SHA1(02991bf1d33ac1df91f459b2d37cf7e07e347b04), \
+               "ngs_u6.rom",CRC(e0124da0) SHA1(bfdba059d084c93122ad291aa8def61f43c26d47), \
+               "ngs_u7.rom",CRC(dc1c74d0) SHA1(21b6b4d2cdd5086bcbbc7ee7a2abdc550a45d2e3), \
+               "ng_u8_s.l1",CRC(c9fb065e) SHA1(c148178ee0ea787acc88078db01d17073e75fdc7))
+
+WPC_ROMSTART(sttng,l7,"trek_lx7.rom",  0x80000,CRC(d439fdbb) SHA1(12d1c72cd6cc18db53e51ebb4c1e55ca9bcf9908)) ST_SND WPC_ROMEND
+WPC_ROMSTART(sttng,d7,"trek_dx7.rom",  0x80000,CRC(e0894fab) SHA1(673695d9a0533cccdc842489e875223fcd8ccbd9)) ST_SND WPC_ROMEND
+
+WPC_ROMSTART(sttng,x7,"trek_x7.rom",   0x80000,CRC(4e71c9c7) SHA1(8a7ec42dfb4a6902ba745548b40e84de5305c295)) ST_SPECIAL_SND WPC_ROMEND
+WPC_ROMSTART(sttng,dx,"trek_d7.rom",   0x80000,CRC(57c15e90) SHA1(bf99d5b0102489db5a994a8a3801e5b1a27e541a)) ST_SPECIAL_SND WPC_ROMEND
+
 WPC_ROMSTART(sttng,l7c,"trek_lx7c.rom",0x80000,CRC(da2b5082) SHA1(7f87d89e04f284e6050b7a3fbbf48e1db40cb804)) ST_SND WPC_ROMEND
 
-WPC_ROMSTART(sttng,x7,"trek_x7.rom",0x80000,CRC(4e71c9c7) SHA1(8a7ec42dfb4a6902ba745548b40e84de5305c295))
-DCS_SOUNDROM7x("ngs_u2.rom",CRC(e9fe68fe) SHA1(3d7631aa5ddd52f7c3c00cd091e212430faea249),
-               "ngs_u3.rom",CRC(368cfd89) SHA1(40ddc12b2cabbcf73ababf753f3a2fd4bcc10737),
-               "ngs_u4.rom",CRC(8e79a513) SHA1(4b763d7445acd921a0a6d64d18b5df8ff9e3257e),
-               "ngs_u5.rom",CRC(46049eb0) SHA1(02991bf1d33ac1df91f459b2d37cf7e07e347b04),
-               "ngs_u6.rom",CRC(e0124da0) SHA1(bfdba059d084c93122ad291aa8def61f43c26d47),
-               "ngs_u7.rom",CRC(dc1c74d0) SHA1(21b6b4d2cdd5086bcbbc7ee7a2abdc550a45d2e3),
-               "ng_u8_s.l1",CRC(c9fb065e) SHA1(c148178ee0ea787acc88078db01d17073e75fdc7))
-WPC_ROMEND
-WPC_ROMSTART(sttng,dx,"trek_d7.rom",0x80000,CRC(57c15e90) SHA1(bf99d5b0102489db5a994a8a3801e5b1a27e541a))
-DCS_SOUNDROM7x("ngs_u2.rom",CRC(e9fe68fe) SHA1(3d7631aa5ddd52f7c3c00cd091e212430faea249),
-               "ngs_u3.rom",CRC(368cfd89) SHA1(40ddc12b2cabbcf73ababf753f3a2fd4bcc10737),
-               "ngs_u4.rom",CRC(8e79a513) SHA1(4b763d7445acd921a0a6d64d18b5df8ff9e3257e),
-               "ngs_u5.rom",CRC(46049eb0) SHA1(02991bf1d33ac1df91f459b2d37cf7e07e347b04),
-               "ngs_u6.rom",CRC(e0124da0) SHA1(bfdba059d084c93122ad291aa8def61f43c26d47),
-               "ngs_u7.rom",CRC(dc1c74d0) SHA1(21b6b4d2cdd5086bcbbc7ee7a2abdc550a45d2e3),
-               "ng_u8_s.l1",CRC(c9fb065e) SHA1(c148178ee0ea787acc88078db01d17073e75fdc7))
-WPC_ROMEND
+//WPC_ROMSTART(sttng,x8,"trek_RC1_828A.rom",0x80000,CRC(22880bf0) SHA1(40e5aa3846240b7c4a7fe78ad57059207d91421c)) ST_SPECIAL_SND WPC_ROMEND // old RC
+WPC_ROMSTART(sttng,x8,"trek_x8.rom",   0x80000,CRC(535bcda6) SHA1(26468e905b6f9e8362fafd8bbb47d18da9af860d)) ST_SPECIAL_SND WPC_ROMEND
 
-WPC_ROMSTART(sttng,s7,"trek_lx7.rom",0x80000,CRC(d439fdbb) SHA1(12d1c72cd6cc18db53e51ebb4c1e55ca9bcf9908))
-DCS_SOUNDROM7x("su2-sp1.rom",CRC(bdef8b2c) SHA1(188d8d2a652844e9885bd9e9ad4143927ddc6fee),
-               "ng_u3_s.l1",CRC(9456cac7) SHA1(83e415e0f21bb5418f3677dbc13433e056c523ab),
-               "ng_u4_s.l1",CRC(179d22a4) SHA1(456b7189e23d4e2bd7e2a6249fa2a73bf0e12194),
-               "ng_u5_s.l1",CRC(231a3e72) SHA1(081b1a042e62ccb723788059d6c1e00b9b32c778),
-               "ng_u6_s.l1",CRC(bb21377d) SHA1(229fb42a1f8b22727a809e5d63f26f045a2adda5),
-               "ng_u7_s.l1",CRC(d81b39f0) SHA1(3443e7327c755b85a5b390f7fcd0e9923890425a),
-               "ng_u8_s.l1",CRC(c9fb065e) SHA1(c148178ee0ea787acc88078db01d17073e75fdc7))
-WPC_ROMEND
-WPC_ROMSTART(sttng,ds,"trek_dx7.rom",0x80000,CRC(e0894fab) SHA1(673695d9a0533cccdc842489e875223fcd8ccbd9))
-DCS_SOUNDROM7x("su2-sp1.rom",CRC(bdef8b2c) SHA1(188d8d2a652844e9885bd9e9ad4143927ddc6fee),
+WPC_ROMSTART(sttng,p4,"sttng_p4.u6",0x80000,CRC(836774f0) SHA1(5784f77eaad41ccf07446874720be146fd562c68))
+DCS_SOUNDROM7x("su2-sp1.rom",CRC(bdef8b2c) SHA1(188d8d2a652844e9885bd9e9ad4143927ddc6fee), // where does this P-1 sound rom really belong to? all prototypes? or is even P-4 too new? // Only 4 bytes are different from L-1
                "ng_u3_s.l1",CRC(9456cac7) SHA1(83e415e0f21bb5418f3677dbc13433e056c523ab),
                "ng_u4_s.l1",CRC(179d22a4) SHA1(456b7189e23d4e2bd7e2a6249fa2a73bf0e12194),
                "ng_u5_s.l1",CRC(231a3e72) SHA1(081b1a042e62ccb723788059d6c1e00b9b32c778),
@@ -618,10 +610,9 @@ DCS_SOUNDROM7x("su2-sp1.rom",CRC(bdef8b2c) SHA1(188d8d2a652844e9885bd9e9ad414392
                "ng_u8_s.l1",CRC(c9fb065e) SHA1(c148178ee0ea787acc88078db01d17073e75fdc7))
 WPC_ROMEND
 
-WPC_ROMSTART(sttng,p4,"sttng_p4.u6",0x80000,CRC(836774f0) SHA1(5784f77eaad41ccf07446874720be146fd562c68)) ST_SND WPC_ROMEND
-WPC_ROMSTART(sttng,p5,"sttng_p5.u6",0x80000,CRC(c1b80a8e) SHA1(90dd99efd41ec5405c631ad374a369f9fcb7217e)) ST_SND WPC_ROMEND
-WPC_ROMSTART(sttng,p6,"sttng_p6.u6",0x80000,CRC(3162c58a) SHA1(f9007a36b53f762fb220f23953cd9745e2ca3cba)) ST_SND WPC_ROMEND
-WPC_ROMSTART(sttng,p8,"sttng_p8.u6",0x80000,CRC(bf599f45) SHA1(ec660f99030f89bdfe3d04cc38fd450d6bbedf7d)) ST_SND WPC_ROMEND
+WPC_ROMSTART(sttng,p5,"sttng_p5.u6", 0x80000,CRC(c1b80a8e) SHA1(90dd99efd41ec5405c631ad374a369f9fcb7217e)) ST_SND WPC_ROMEND
+WPC_ROMSTART(sttng,p6,"sttng_p6.u6", 0x80000,CRC(3162c58a) SHA1(f9007a36b53f762fb220f23953cd9745e2ca3cba)) ST_SND WPC_ROMEND
+WPC_ROMSTART(sttng,p8,"sttng_p8.u6", 0x80000,CRC(bf599f45) SHA1(ec660f99030f89bdfe3d04cc38fd450d6bbedf7d)) ST_SND WPC_ROMEND
 WPC_ROMSTART(sttng,g7,"trek_lg7.rom",0x80000,CRC(e723b8a1) SHA1(77c3f8ea378772ce45bb8de818069fc08cbc4574)) ST_SND WPC_ROMEND
 WPC_ROMSTART(sttng,h7,"trek_dg7.rom",0x80000,CRC(8df53345) SHA1(341951d7d1d775d81b8166270787852b34693808)) ST_SND WPC_ROMEND
 WPC_ROMSTART(sttng,l1,"trek_lx1.rom",0x80000,CRC(390befc0) SHA1(2059891e3fc3034d600274c3915371123c964d28)) ST_SND WPC_ROMEND
@@ -634,17 +625,15 @@ WPC_ROMSTART(sttng,l5,"trek_lx5.rom",0x80000,CRC(e004f3a7) SHA1(c724641106115e3f
 /*--------------
 /  Game drivers
 /---------------*/
-CORE_GAMEDEF(sttng,l7,"Star Trek: The Next Generation (LX-7)",1994,"Williams",wpc_mDCSS,0)
-CORE_CLONEDEF(sttng,d7,l7,"Star Trek: The Next Generation (DX-7 LED Ghost Fix)",1994,"Williams",wpc_mDCSS,0)
+CORE_GAMEDEF(sttng,l7,"Star Trek: The Next Generation (LX-7, Sound L-1)",1994,"Williams",wpc_mDCSS,0)
+CORE_CLONEDEF(sttng,d7,l7,"Star Trek: The Next Generation (DX-7 LED Ghost Fix, Sound L-1)",1994,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,l7c,l7,"Star Trek: The Next Generation (LX-7C Competition MOD)",2017,"Williams",wpc_mDCSS,0) //rev. L-7X patch b804
-CORE_CLONEDEF(sttng,x7,l7,"Star Trek: The Next Generation (LX-7 Special Sound)",1994,"Williams",wpc_mDCSS,0)
-CORE_CLONEDEF(sttng,dx,l7,"Star Trek: The Next Generation (DX-7 Special Sound LED Ghost Fix)",1994,"Williams",wpc_mDCSS,0)
+CORE_CLONEDEF(sttng,x7,l7,"Star Trek: The Next Generation (LX-7, Special Sound L-1)",1994,"Williams",wpc_mDCSS,0)
+CORE_CLONEDEF(sttng,dx,l7,"Star Trek: The Next Generation (DX-7 LED Ghost Fix, Special Sound L-1)",1994,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,p4,l7,"Star Trek: The Next Generation (P-4 Prototype)",1993,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,p5,l7,"Star Trek: The Next Generation (P-5 Prototype)",1993,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,p6,l7,"Star Trek: The Next Generation (P-6 LED Ghost Fix)",1993,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,p8,l7,"Star Trek: The Next Generation (P-8 Prototype)",1993,"Williams",wpc_mDCSS,0)
-CORE_CLONEDEF(sttng,s7,l7,"Star Trek: The Next Generation (LX-7 SP1)",1994,"Williams",wpc_mDCSS,0)
-CORE_CLONEDEF(sttng,ds,l7,"Star Trek: The Next Generation (DX-7 SP1 LED Ghost Fix)",1994,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,g7,l7,"Star Trek: The Next Generation (LG-7 German)",1994,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,h7,l7,"Star Trek: The Next Generation (HG-7 LED Ghost Fix)",1994,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,l1,l7,"Star Trek: The Next Generation (LX-1)",1993,"Williams",wpc_mDCSS,0)
@@ -653,20 +642,22 @@ CORE_CLONEDEF(sttng,l2,l7,"Star Trek: The Next Generation (LX-2)",1993,"Williams
 CORE_CLONEDEF(sttng,d2,l7,"Star Trek: The Next Generation (DX-2 LED Ghost Fix)",1993,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,l3,l7,"Star Trek: The Next Generation (LX-3)",1993,"Williams",wpc_mDCSS,0)
 CORE_CLONEDEF(sttng,l5,l7,"Star Trek: The Next Generation (LX-5)",1993,"Williams",wpc_mDCSS,0)
+//LX-8 MOD: https://www.flippermarkt.de/community/forum/threads/sttng-neues-game-rom-lx8-aktueller-stand-und-allgemeine-infos-zur-nz-in-lx7.251544
+CORE_CLONEDEF(sttng,x8,l7,"Star Trek: The Next Generation (LX-8 MOD, Special Sound L-1)",2023,"Williams",wpc_mDCSS,0)
 
 /*-----------------------
 / Simulation Definitions
 /-----------------------*/
 static sim_tSimData sttngSimData = {
-  2,    		/* 2 game specific input ports */
-  sttng_stateDef,	/* Definition of all states */
-  sttng_inportData,	/* Keyboard Entries */
+  2,                    /* 2 game specific input ports */
+  sttng_stateDef,       /* Definition of all states */
+  sttng_inportData,     /* Keyboard Entries */
   { stTrough1, stTrough2, stTrough3, stTrough4, stTrough5, stTrough6, stDrain }, /*Position where balls start.. Max 7 Balls Allowed*/
-  NULL, 		/* no init */
+  NULL,                 /* no init */
   sttng_handleBallState,/*Function to handle ball state changes*/
-  sttng_drawStatic,	/*Function to handle mechanical state changes*/
-  FALSE, 		/* Do not simulate manual shooter */
-  NULL  		/* no custom key conditions */
+  sttng_drawStatic,     /*Function to handle mechanical state changes*/
+  FALSE,                /* Do not simulate manual shooter */
+  NULL                  /* no custom key conditions */
 };
 
 /*----------------------
@@ -703,7 +694,7 @@ static void init_sttng(void) {
   core_gameData = &sttngGameData;
   wpc_set_modsol_aux_board(1);
   install_mem_read_handler(WPC_CPUNO, WPC_SWROWREAD+WPC_BASE, WPC_SWROWREAD+WPC_BASE,
-                         sttng_swRowRead);
+                           sttng_swRowRead);
 }
 
 static int sttng_getSol(int solNo) {
@@ -744,8 +735,8 @@ static void sttng_handleMech(int mech) {
       /*Solenoid not firing, if after CHECK_SOL # of checks, it hasn't fired, we flag it as open!*/
       utdivcnt++;
       if (utdivcnt > CHECK_SOL) {
-	utdivcnt=0;
-	locals.UTDivPos = DIV_OPEN;
+        utdivcnt=0;
+        locals.UTDivPos = DIV_OPEN;
       }
     }
   }
@@ -776,8 +767,8 @@ static void sttng_handleMech(int mech) {
       /*Solenoid not firing, if after CHECK_SOL # of checks, it hasn't fired, we flag it as open!*/
       ttdivcnt++;
       if (ttdivcnt > CHECK_SOL) {
-	ttdivcnt=0;
- 	locals.TTDivPos = DIV_OPEN;
+        ttdivcnt=0;
+        locals.TTDivPos = DIV_OPEN;
       }
     }
   }
@@ -818,20 +809,20 @@ static void sttng_handleMech(int mech) {
       /*Buffer movement.. Even if motor is firing, delay actual movement*/
       /*Here to prevent a simulator bug which moves the guns before loading them*/
       if (lbuff++ > CHECK_SOL+40) {
-	/*Do we need to reverse direction?*/
-	if (locals.LgunLDir == GUN_LEFT && locals.LgunPos >= GUN_END)
-    	  locals.LgunDir = GUN_RIGHT;
+        /*Do we need to reverse direction?*/
+        if (locals.LgunLDir == GUN_LEFT && locals.LgunPos >= GUN_END)
+          locals.LgunDir = GUN_RIGHT;
 
-	if (locals.LgunLDir == GUN_RIGHT && locals.LgunPos <= 0)
-  	  locals.LgunDir = GUN_LEFT;
+        if (locals.LgunLDir == GUN_RIGHT && locals.LgunPos <= 0)
+          locals.LgunDir = GUN_LEFT;
 
-	/*Capture direction*/
-	locals.LgunLDir = locals.LgunDir;
+        /*Capture direction*/
+        locals.LgunLDir = locals.LgunDir;
 
-	/*Change it's position*/
-	locals.LgunPos += (locals.LgunDir==GUN_LEFT)?1:-1;
+        /*Change it's position*/
+        locals.LgunPos += (locals.LgunDir==GUN_LEFT)?1:-1;
       }
-    }	/*Gun Motor*/
+    } /*Gun Motor*/
     else
       lbuff = 0;
   }
@@ -859,19 +850,19 @@ static void sttng_handleMech(int mech) {
       /*Buffer movement.. Even if motor is firing, delay actual movement*/
       /*Here to prevent a simulator bug which moves the guns before loading them*/
       if (rbuff++ > CHECK_SOL+40) {
-	/*Do we need to reverse direction?*/
-	if (locals.RgunLDir == GUN_LEFT && locals.RgunPos >= GUN_END)
-  	  locals.RgunDir = GUN_RIGHT;
-	if (locals.RgunLDir == GUN_RIGHT && locals.RgunPos <= 0)
-	  locals.RgunDir = GUN_LEFT;
+        /*Do we need to reverse direction?*/
+        if (locals.RgunLDir == GUN_LEFT && locals.RgunPos >= GUN_END)
+          locals.RgunDir = GUN_RIGHT;
+        if (locals.RgunLDir == GUN_RIGHT && locals.RgunPos <= 0)
+          locals.RgunDir = GUN_LEFT;
 
-	/*Capture direction*/
-	locals.RgunLDir = locals.RgunDir;
+        /*Capture direction*/
+        locals.RgunLDir = locals.RgunDir;
 
-	/*Change it's position*/
-	locals.RgunPos += (locals.RgunDir==GUN_LEFT)?1:-1;
-      }	/*Gun Motor*/
-    }
+        /*Change it's position*/
+        locals.RgunPos += (locals.RgunDir==GUN_LEFT)?1:-1;
+      }
+    } /*Gun Motor*/
     else
       rbuff=0;
   }

@@ -9,17 +9,18 @@ project(pinmame VERSION ${PROJECT_VERSION})
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
 set(CMAKE_OSX_ARCHITECTURES arm64)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-set(CMAKE_CXX_FLAGS -fembed-bitcode)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_C_FLAGS -fembed-bitcode)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_CXX_FLAGS -fembed-bitcode)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(ExternalProject)
 
 ExternalProject_Add(zlib
-  URL https://zlib.net/zlib-1.2.12.tar.gz
+  URL https://zlib.net/zlib-1.2.13.tar.gz
   CMAKE_ARGS -DCMAKE_SYSTEM_NAME=iOS
   CMAKE_ARGS -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
   CMAKE_ARGS -DCMAKE_OSX_ARCHITECTURES=arm64
@@ -372,6 +373,8 @@ add_library(pinmame STATIC
    src/wpc/boomerang.c
    src/wpc/bowarrow.c
    src/wpc/bowlgames.c
+   src/wpc/bulb.c
+   src/wpc/bulb.h
    src/wpc/by35.c
    src/wpc/by35.h
    src/wpc/by35games.c

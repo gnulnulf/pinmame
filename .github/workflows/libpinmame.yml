@@ -4,7 +4,7 @@ on:
 
 env:
   VERSION_START_SHA: e87be0e3cfa66411976ca04a72dd29e36c483966
-  UPX_ARTIFACT: 257015033
+  UPX_ARTIFACT: 345209471
 
 defaults:
   run:
@@ -30,10 +30,10 @@ jobs:
           SHA="${GITHUB_SHA}"
           SHA7="${SHA::7}"
           TAG="${VERSION}-${REVISION}-${SHA7}"
-          echo "::set-output name=version::${VERSION}"
-          echo "::set-output name=revision::${REVISION}"
-          echo "::set-output name=sha::${SHA}"
-          echo "::set-output name=tag::${TAG}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "revision=${REVISION}" >> $GITHUB_OUTPUT
+          echo "sha=${SHA}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
   build:
     name: Build libpinmame-${{ matrix.platform }}
@@ -69,19 +69,25 @@ jobs:
           - os: macos-latest
             platform: ios-arm64
             libpinmame: libpinmame.${{ needs.version.outputs.version }}.a
-          - os: ubuntu-18.04
+          - os: ubuntu-latest
             platform: linux-x64
             libpinmame: libpinmame.so.${{ needs.version.outputs.version }}
             pinmame-test: pinmame_test
-          - os: ubuntu-18.04
+          - os: ubuntu-latest
             platform: android-arm64-v8a
             libpinmame: libpinmame.${{ needs.version.outputs.version }}.so
     steps:
       - uses: actions/checkout@v3
+#      - run: |
+#          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+#            curl -sL -H "Authorization: Token ${{ secrets.GH_PAT }}" https://api.github.com/repos/upx/upx/actions/artifacts/${{ env.UPX_ARTIFACT }}/zip -o upx.zip
+#            7z x upx.zip -oupx
+#            rm upx.zip
+#          fi
       - run: |
           if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            curl -sL -H "Authorization: Token ${{ secrets.GH_PAT }}" https://api.github.com/repos/upx/upx/actions/artifacts/${{ env.UPX_ARTIFACT }}/zip -o upx.zip
-            7z x upx.zip -oupx
+            curl -L https://github.com/upx/upx/releases/download/v4.0.1/upx-4.0.1-win64.zip -o upx.zip
+            7z e upx.zip -oupx
             rm upx.zip
           fi
       - name: Build libpinmame-${{ matrix.platform }}

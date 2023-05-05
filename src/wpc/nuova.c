@@ -1,3 +1,5 @@
+// license:BSD-3-Clause
+
 /******************************************************************************************
   Nuova Bell Games
   ----------------
@@ -11,6 +13,7 @@
   - Skill Flight schematics show an additional TMS5220C speech chip which is not used?!
   - U-Boat 65 has an additional music board, no info available
 *******************************************************************************************/
+
 #include "driver.h"
 #include "cpu/m6800/m6800.h"
 #include "cpu/i8051/i8051.h"
@@ -246,7 +249,7 @@ static core_tLCDLayout dispAlpha[] = {
 INITGAMENB(suprbowl,GEN_BY35,dispNB,FLIP_SW(FLIP_L),0,SNDBRD_BY51N,BY35GD_NOSOUNDE)
 BY35_ROMSTARTx00(suprbowl,"sbowlu2.732", CRC(bc497a13) SHA1(f428373bde72f0302c45c326aebbe56e8b09c2d6),
                           "sbowlu6.732", CRC(a9c92719) SHA1(972da0cf87863b637b88575c329f1d8162098d6f))
-BY56_SOUNDROM(            "suprbowl.snd",CRC(97fc0f7a) SHA1(595aa080a6d2c1ab7e718974c4d01e846e142cc1))
+BY56_SOUNDROM(            "suprbowl.snd",CRC(04f37a2a) SHA1(9d07661e67593e865364f5883be4dcd2ca084060))
 BY35_ROMEND
 BY35_INPUT_PORTS_START(suprbowl, 1) BY35_INPUT_PORTS_END
 CORE_GAMEDEFNV(suprbowl,"Super Bowl",1984,"Bell Games",by35_mBY35_51NS,0)
@@ -257,7 +260,7 @@ CORE_GAMEDEFNV(suprbowl,"Super Bowl",1984,"Bell Games",by35_mBY35_51NS,0)
 INITGAMENB(sprbwlfp,GEN_BY35,dispNB,FLIP_SW(FLIP_L),0,SNDBRD_BY51N,BY35GD_NOSOUNDE)
 BY35_ROMSTARTx00(sprbwlfp,"sbwlfpu2.732",CRC(94be32b4) SHA1(a20d645ab48b58cc5e009aa0ba39172b1a2e98e7),
                           "sbwlfpu6.732",CRC(691db61b) SHA1(270b63d6945f29d5fb3086e7a14dff69b7d310e0))
-BY56_SOUNDROM(            "suprbowl.snd",CRC(97fc0f7a) SHA1(595aa080a6d2c1ab7e718974c4d01e846e142cc1))
+BY56_SOUNDROM(            "suprbowl.snd",CRC(04f37a2a) SHA1(9d07661e67593e865364f5883be4dcd2ca084060))
 BY35_ROMEND
 BY35_INPUT_PORTS_START(sprbwlfp, 1) BY35_INPUT_PORTS_END
 CORE_CLONEDEFNV(sprbwlfp,suprbowl,"Super Bowl (Free Play)",2018,"Bell Games / Quench",by35_mBY35_51NS,0)
@@ -282,14 +285,40 @@ CORE_CLONEDEFNV(tigerrag,kosteel,"Tiger Rag",1984,"Bell Games",by35_mBY35_45S,0)
 /*--------------------------------
 / Cosmic Flash (ROMs almost the same as Flash Gordon but different gameplay)
 /-------------------------------*/
-INITGAMENB(cosflash,GEN_BY35,dispNB,FLIP_SW(FLIP_L),8,SNDBRD_BY61,0)
+static MEMORY_READ_START(cf_readmem)
+  { 0x0000, 0x007f, MRA_RAM },
+  { 0x0080, 0x0083, pia_r(2) },
+  { 0x0090, 0x0093, MRA_NOP }, // no TMS speech chip, just one PIA
+  { 0xf000, 0xffff, MRA_ROM },
+MEMORY_END
+
+static MEMORY_WRITE_START(cf_writemem)
+  { 0x0000, 0x007f, MWA_RAM },
+  { 0x0080, 0x0083, pia_w(2) },
+  { 0x0090, 0x0093, MWA_NOP }, // no TMS speech chip, just one PIA
+MEMORY_END
+
+extern READ_HANDLER(snt_8910a_r);
+static struct AY8910interface cf_ay8910Int = { 1, 3579545./4., {25}, {snt_8910a_r}};
+
+static MACHINE_DRIVER_START(cosflash)
+  MDRV_IMPORT_FROM(by35)
+  MDRV_DIAGNOSTIC_LEDH(2)
+
+  MDRV_CPU_ADD_TAG("scpu", M6802, 3579545./4.)
+  MDRV_CPU_FLAGS(CPU_AUDIO_CPU)
+  MDRV_CPU_MEMORY(cf_readmem, cf_writemem)
+
+  MDRV_SOUND_ADD(AY8910, cf_ay8910Int)
+MACHINE_DRIVER_END
+
+INITGAMENB(cosflash,GEN_BY35,dispNB,FLIP_SW(FLIP_L),8,SNDBRD_BY61N,BY35GD_NOSOUNDE)
 BY35_ROMSTARTx00(cosflash,"cf2d.532",    CRC(939e941d) SHA1(889862043f351762e8c866aefb36a9ea75cbf828),
                           "cf6d.532",    CRC(7af93d2f) SHA1(2d939b14f7fe79f836e12926f44b70037630cd3f))
-BY61_SOUNDROM0xx0(        "834-20_2.532",CRC(2f8ced3e) SHA1(ecdeb07c31c22ec313b55774f4358a9923c5e9e7),
-                          "834-18_5.532",CRC(8799e80e) SHA1(f255b4e7964967c82cfc2de20ebe4b8d501e3cb0))
+BY61_SOUNDROMxxx0(        "cf-sound.532",CRC(7fda4f13) SHA1(9993ba890e91613014bad0950511bcff522b8dbd) BAD_DUMP)
 BY35_ROMEND
 BY35_INPUT_PORTS_START(cosflash, 1) BY35_INPUT_PORTS_END
-CORE_GAMEDEFNV(cosflash,"Cosmic Flash",1985,"Bell Games",by35_mBY35_61S,0)
+CORE_GAMEDEFNV(cosflash,"Cosmic Flash",1985,"Bell Games",cosflash,0)
 
 /*--------------------------------
 / Saturn 2 (Spy Hunter Clone)

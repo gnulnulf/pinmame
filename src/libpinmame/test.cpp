@@ -22,76 +22,46 @@ void DumpDmd(int index, UINT8* p_displayData, PinmameDisplayLayout* p_displayLay
 			
 			if (p_displayLayout->depth == 2) {
 				switch(value) {
-					case 0x14:
+					case 0:
 						printf("░");
 						break;
-					case 0x21:
+					case 1:
 						printf("▒");
 						break;
-					case 0x43:
+					case 2:
 						printf("▓");
 						break;
-					case 0x64:
+					case 3:
 						printf("▓");
 						break;
 				}
 			}
 			else {
-				if (PinmameGetHardwareGen() & (SAM | SPA)) {
-					switch(value) {
-						case 0x00:
-						case 0x14:
-						case 0x19:
-						case 0x1E:
-							printf("░");
-							break;
-						case 0x23:
-						case 0x28:
-						case 0x2D:
-						case 0x32:
-							printf("▒");
-							break;
-						case 0x37:
-						case 0x3C:
-						case 0x41:
-						case 0x46:
-							printf("▓");
-							break;
-						case 0x4B:
-						case 0x50:
-						case 0x5A:
-						case 0x64:
-							printf("▓");
-							break;
-					}
-				}
-				else {
-					switch(value) {
-						case 0x00:
-						case 0x1E:
-						case 0x23:
-						case 0x28:
-							printf("░");
-							break;
-						case 0x2D:
-						case 0x32:
-						case 0x37:
-						case 0x3C:
-							printf("▒");
-							break;
-						case 0x41:
-						case 0x46:
-						case 0x4B:
-						case 0x50:
-							printf("▓");
-							break;
-						case 0x55:
-						case 0x5A:
-						case 0x5F:
-						case 0x64:
-							printf("▓");
-							break;
-					}
+				switch(value) {
+					case 0:
+					case 1:
+					case 2:
+					case 3:
+						printf("░");
+						break;
+					case 4:
+					case 5:
+					case 6:
+					case 7:
+						printf("▒");
+						break;
+					case 8:
+					case 9:
+					case 10:
+					case 11:
+						printf("▓");
+						break;
+					case 12:
+					case 13:
+					case 14:
+					case 15:
+						printf("▓");
+						break;
 				}
 			}
 		}
@@ -159,12 +129,12 @@ void DumpAlphanumeric(int index, UINT16* p_displayData, PinmameDisplayLayout* p_
 	}
 }
 
-void CALLBACK Game(PinmameGame* game) {
+void CALLBACK Game(PinmameGame* game, const void* p_userData) {
 	printf("Game(): name=%s, description=%s, manufacturer=%s, year=%s, flags=%lu, found=%d\n",
 		game->name, game->description, game->manufacturer, game->year, (unsigned long)game->flags, game->found);
 }
 
-void CALLBACK OnStateUpdated(int state) {
+void CALLBACK OnStateUpdated(int state, const void* p_userData) {
 	printf("OnStateUpdated(): state=%d\n", state);
 
 	if (!state) {
@@ -186,7 +156,7 @@ void CALLBACK OnStateUpdated(int state) {
 	}
 }
 
-void CALLBACK OnDisplayAvailable(int index, int displayCount, PinmameDisplayLayout* p_displayLayout) {
+void CALLBACK OnDisplayAvailable(int index, int displayCount, PinmameDisplayLayout* p_displayLayout, const void* p_userData) {
 	printf("OnDisplayAvailable(): index=%d, displayCount=%d, type=%d, top=%d, left=%d, width=%d, height=%d, depth=%d, length=%d\n",
 		index,
 		displayCount,
@@ -199,7 +169,7 @@ void CALLBACK OnDisplayAvailable(int index, int displayCount, PinmameDisplayLayo
 		p_displayLayout->length);
 }
 
-void CALLBACK OnDisplayUpdated(int index, void* p_displayData, PinmameDisplayLayout* p_displayLayout) {
+void CALLBACK OnDisplayUpdated(int index, void* p_displayData, PinmameDisplayLayout* p_displayLayout, const void* p_userData) {
 	printf("OnDisplayUpdated(): index=%d, type=%d, top=%d, left=%d, width=%d, height=%d, depth=%d, length=%d\n",
 		index,
 		p_displayLayout->type,
@@ -210,15 +180,17 @@ void CALLBACK OnDisplayUpdated(int index, void* p_displayData, PinmameDisplayLay
 		p_displayLayout->depth,
 		p_displayLayout->length);
 
-	if ((p_displayLayout->type & DMD) == DMD) {
-		DumpDmd(index, (UINT8*)p_displayData, p_displayLayout);
-	}
-	else {
-		DumpAlphanumeric(index, (UINT16*)p_displayData, p_displayLayout);
+	if (p_displayData) {
+		if ((p_displayLayout->type & DMD) == DMD) {
+			DumpDmd(index, (UINT8*)p_displayData, p_displayLayout);
+		}
+		else {
+			DumpAlphanumeric(index, (UINT16*)p_displayData, p_displayLayout);
+		}
 	}
 }
 
-int CALLBACK OnAudioAvailable(PinmameAudioInfo* p_audioInfo) {
+int CALLBACK OnAudioAvailable(PinmameAudioInfo* p_audioInfo, const void* p_userData) {
 	printf("OnAudioAvailable(): format=%d, channels=%d, sampleRate=%.2f, framesPerSecond=%.2f, samplesPerFrame=%d, bufferSize=%d\n",
 		p_audioInfo->format,
 		p_audioInfo->channels,
@@ -229,15 +201,15 @@ int CALLBACK OnAudioAvailable(PinmameAudioInfo* p_audioInfo) {
 	return p_audioInfo->samplesPerFrame;
 }
 
-int CALLBACK OnAudioUpdated(void* p_buffer, int samples) {
+int CALLBACK OnAudioUpdated(void* p_buffer, int samples, const void* p_userData) {
 	return samples;
 }
 
-void CALLBACK OnSolenoidUpdated(int solenoid, int isActive) {
-	printf("OnSolenoidUpdated: solenoid=%d, isActive=%d\n", solenoid, isActive);
+void CALLBACK OnSolenoidUpdated(PinmameSolenoidState* p_solenoidState, const void* p_userData) {
+	printf("OnSolenoidUpdated: solenoid=%d, state=%d\n", p_solenoidState->solNo,  p_solenoidState->state);
 }
 
-void CALLBACK OnMechAvailable(int mechNo, PinmameMechInfo* p_mechInfo) {
+void CALLBACK OnMechAvailable(int mechNo, PinmameMechInfo* p_mechInfo, const void* p_userData) {
 	printf("OnMechAvailable: mechNo=%d, type=%d, length=%d, steps=%d, pos=%d, speed=%d\n",
 		mechNo,
 		p_mechInfo->type,
@@ -247,7 +219,7 @@ void CALLBACK OnMechAvailable(int mechNo, PinmameMechInfo* p_mechInfo) {
 		p_mechInfo->speed);
 }
 
-void CALLBACK OnMechUpdated(int mechNo, PinmameMechInfo* p_mechInfo) {
+void CALLBACK OnMechUpdated(int mechNo, PinmameMechInfo* p_mechInfo, const void* p_userData) {
 	printf("OnMechUpdated: mechNo=%d, type=%d, length=%d, steps=%d, pos=%d, speed=%d\n",
 		mechNo,
 		p_mechInfo->type,
@@ -257,12 +229,18 @@ void CALLBACK OnMechUpdated(int mechNo, PinmameMechInfo* p_mechInfo) {
 		p_mechInfo->speed);
 }
 
-void CALLBACK OnConsoleDataUpdated(void* p_data, int size) {
+void CALLBACK OnConsoleDataUpdated(void* p_data, int size, const void* p_userData) {
 	printf("OnConsoleDataUpdated: size=%d\n", size);
 }
 
-int CALLBACK IsKeyPressed(PINMAME_KEYCODE keycode) {
+int CALLBACK IsKeyPressed(PINMAME_KEYCODE keycode, const void* p_userData) {
 	return 0;
+}
+
+void CALLBACK OnLogMessage(const char* format, va_list args, const void* p_userData) {
+    char buffer[1024];
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    printf("%s\n", buffer);
 }
 
 int main(int, char**) {
@@ -281,13 +259,14 @@ int main(int, char**) {
 		&OnMechUpdated,
 		&OnSolenoidUpdated,
 		&OnConsoleDataUpdated,
-		&IsKeyPressed
+		&IsKeyPressed,
+		&OnLogMessage,
 	};
 
 	#if defined(_WIN32) || defined(_WIN64)
-		snprintf((char*)config.vpmPath, MAX_PATH, "%s%s\\pinmame\\", getenv("HOMEDRIVE"), getenv("HOMEPATH"));
+		snprintf((char*)config.vpmPath, PINMAME_MAX_PATH, "%s%s\\pinmame\\", getenv("HOMEDRIVE"), getenv("HOMEPATH"));
 	#else
-		snprintf((char*)config.vpmPath, MAX_PATH, "%s/.pinmame/", getenv("HOME"));
+		snprintf((char*)config.vpmPath, PINMAME_MAX_PATH, "%s/.pinmame/", getenv("HOME"));
 	#endif
 
 	PinmameSetConfig(&config);
@@ -295,8 +274,10 @@ int main(int, char**) {
 	PinmameSetHandleKeyboard(0);
 	PinmameSetHandleMechanics(0);
 
-	PinmameGetGames(&Game);
-	PinmameGetGame("fourx4", &Game);
+	PinmameSetDmdMode(PINMAME_DMD_MODE::RAW);
+
+	PinmameGetGames(&Game, NULL);
+	PinmameGetGame("fourx4", &Game, NULL);
 
 	//PinmameRun("mm_109c");
 	//PinmameRun("fh_906h");
@@ -307,11 +288,11 @@ int main(int, char**) {
 	//PinmameRun("fourx4");
 	//PinmameRun("ripleys");
 	//PinmameRun("fh_l9");
-	//PinmameRun("acd_168hc");
+	//PinmameRun("acd_170hc");
 	//PinmameRun("snspares");
 
 	if (PinmameRun("t2_l8") == OK) {
-		while (1) {
+		while (true) {
 			std::this_thread::sleep_for(std::chrono::microseconds(100));
 		}
 	}

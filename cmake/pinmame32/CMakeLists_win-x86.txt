@@ -92,23 +92,6 @@ add_compile_definitions(
    _CRT_SECURE_NO_WARNINGS
 )
 
-add_compile_options(
-   $<$<CONFIG:RELEASE>:/Ob2>
-   $<$<CONFIG:RELEASE>:/O2>
-   $<$<CONFIG:RELEASE>:/Oi>
-   $<$<CONFIG:RELEASE>:/arch:SSE2>
-   $<$<CONFIG:RELEASE>:/fp:fast>
-   $<$<CONFIG:RELEASE>:/fp:except->
-   $<$<CONFIG:RELEASE>:/Ot>
-   $<$<CONFIG:RELEASE>:/GF>
-   $<$<CONFIG:RELEASE>:/GS->
-   $<$<CONFIG:RELEASE>:/Gy>
-   $<$<CONFIG:RELEASE>:/GR->
-   $<$<CONFIG:RELEASE>:/Oy>
-   $<$<CONFIG:RELEASE>:/GT>
-   $<$<CONFIG:RELEASE>:/GL>
-)
-
 set_source_files_properties(
    src/windows/asmblit.asm LANGUAGE ASM_NASM
    src/windows/asmtile.asm LANGUAGE ASM_NASM
@@ -383,6 +366,8 @@ add_executable(pinmame32 WIN32
    src/wpc/boomerang.c
    src/wpc/bowarrow.c
    src/wpc/bowlgames.c
+   src/wpc/bulb.c
+   src/wpc/bulb.h
    src/wpc/by35.c
    src/wpc/by35.h
    src/wpc/by35games.c
@@ -671,6 +656,13 @@ add_executable(pinmame32 WIN32
    ext/zlib/zutil.c
 )
 
+set(OPT_COMMON /Ob2 /O2 /Oi /arch:SSE2 /fp:fast /fp:except- /Ot /GF /GS- /Gy /GR- /Oy /GT /GL)
+
+target_compile_options(pinmame32 PUBLIC
+   $<$<CONFIG:RELEASE>:$<$<COMPILE_LANGUAGE:CXX>:${OPT_COMMON}>>
+   $<$<CONFIG:RELEASE>:$<$<COMPILE_LANGUAGE:C>:${OPT_COMMON}>>
+)
+
 target_include_directories(pinmame32 PUBLIC
    src
    src/cpu/m68000/generated_by_m68kmake
@@ -679,7 +671,7 @@ target_include_directories(pinmame32 PUBLIC
    src/ui
    src/windows
    ext/zlib
-   ext/dinput
+   ext/dinput/include
 )
 
 target_link_directories(pinmame32 PUBLIC
@@ -706,6 +698,7 @@ target_link_options(pinmame32 PUBLIC
 )
 
 set_target_properties(pinmame32 PROPERTIES
+   VS_DPI_AWARE "On"
    LINKER_LANGUAGE CXX
    RUNTIME_OUTPUT_NAME "PinMAME32"
    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:DEBUG>:Debug>"

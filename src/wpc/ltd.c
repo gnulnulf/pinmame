@@ -1,3 +1,5 @@
+// license:BSD-3-Clause
+
 /************************************************************************************************
  LTD (Brasil)
  ------------
@@ -23,11 +25,11 @@
 
    Hardware:
    ---------
-		CPU:	 M6802 for system III, M6803 for system 4 with NTSC quartz
+		CPU:     M6802 for system III, M6803 for system 4 with NTSC quartz
 		DISPLAY: 7-segment LED panels, direct segment access on system 4
-		SOUND:	 - discrete (tones) on early system III games
-				 - unknown sound hardware on Force, Space Poker, and Black Hole
-				 - 2 x AY8910 (separated for left & right speaker) for Cowboy, Zephy, and system 4 games
+		SOUND:   - discrete (tones) on early system III games
+		         - unknown sound hardware on Force, Space Poker, and Black Hole
+		         - 2 x AY8910 (separated for left & right speaker) for Cowboy, Zephy, and system 4 games
  ************************************************************************************************/
 
 #include "driver.h"
@@ -52,15 +54,15 @@ static struct {
 
 #define LTD_CPUFREQ	3579545./4.
 
-static WRITE_HANDLER(ay8910_0_ctrl_w) { AY8910_set_volume(0, ALL_8910_CHANNELS, 50); AY8910Write(0,0,data); }
-static WRITE_HANDLER(ay8910_0_data_w) { AY8910_set_volume(0, ALL_8910_CHANNELS, 50); AY8910Write(0,1,data); }
-static WRITE_HANDLER(ay8910_0_mute) { AY8910_set_volume(0, ALL_8910_CHANNELS, 0);  }
-static WRITE_HANDLER(ay8910_1_ctrl_w) { AY8910_set_volume(1, ALL_8910_CHANNELS, 50); AY8910Write(1,0,data); }
-static WRITE_HANDLER(ay8910_1_data_w) { AY8910_set_volume(1, ALL_8910_CHANNELS, 50); AY8910Write(1,1,data); }
-static WRITE_HANDLER(ay8910_1_mute) { AY8910_set_volume(1, ALL_8910_CHANNELS, 0); }
+static WRITE_HANDLER(ay8910_0_ctrl_w)  { AY8910Write(0,0,data); }
+static WRITE_HANDLER(ay8910_0_data_w)  { AY8910Write(0,1,data); }
+static WRITE_HANDLER(ay8910_0_reset)   { AY8910_reset(0);  }
+static WRITE_HANDLER(ay8910_1_ctrl_w)  { AY8910Write(1,0,data); }
+static WRITE_HANDLER(ay8910_1_data_w)  { AY8910Write(1,1,data); }
+static WRITE_HANDLER(ay8910_1_reset)   { AY8910_reset(1); }
 static WRITE_HANDLER(ay8910_01_ctrl_w) { ay8910_0_ctrl_w(offset, data); ay8910_1_ctrl_w(offset, data); }
 static WRITE_HANDLER(ay8910_01_data_w) { ay8910_0_data_w(offset, data); ay8910_1_data_w(offset, data); }
-static WRITE_HANDLER(ay8910_01_reset) { AY8910_reset(0); AY8910_reset(1); }
+static WRITE_HANDLER(ay8910_01_reset)  { ay8910_0_reset(offset, data); ay8910_1_reset(offset, data); }
 
 static WRITE_HANDLER(port_0a_w) { logerror("AY#0 port A: %02x\n", data); }
 static WRITE_HANDLER(port_0b_w) { logerror("AY#0 port B: %02x\n", data); }
@@ -155,13 +157,25 @@ static WRITE_HANDLER(peri_w) {
         if (data & 0x08) lampStrobe = 0;
         else if (data & 0x80) lampStrobe = 1;
         coreGlobals.tmpLampMatrix[5] = data & 0x77;
+        if (cpu_gettotalcpu() > 1) { // for Ekky sound module
+          if (!(data & 0x77)) {
+            locals.auxData = 0;
+          } else if (~locals.auxData & data & 0x77) {
+            locals.auxData = data & 0x77;
+            cpu_set_nmi_line(LTD_CPU_EKKY, PULSE_LINE);
+          }
+        }
         if (data & 0x77) {
           locals.solenoids = (locals.solenoids & 0x1ffff) | ((data & 0x77) << 17);
           coreGlobals.solenoids = locals.solenoids;
           locals.vblankCount = 0;
         }
       } else {
-        coreGlobals.tmpLampMatrix[offset + 12 * lampStrobe] = data;
+        if (offset == 1 && lampStrobe) {
+          coreGlobals.tmpLampMatrix[13] = data;
+        } else {
+          coreGlobals.tmpLampMatrix[offset] = data;
+        }
       }
     } else {
       coreGlobals.tmpLampMatrix[offset] = data;
@@ -170,9 +184,18 @@ static WRITE_HANDLER(peri_w) {
     if (!offset) {
       locals.solenoids = (locals.solenoids & 0xfeffff) | ((data & 0x40) || (~data & 0x10) ? 0 : 0x10000);
       locals.diagnosticLed = data >> 7;
+      if (cpu_gettotalcpu() > 1) { // for Ekky sound module: (un)mute background sound depending on enable
+        mixer_set_volume(2, (locals.solenoids & 0x10000) ? 100 : 0);
+      }
     }
   } else if (offset == 0x06) { // either lamps or solenoids, or a mix of both!
     coreGlobals.tmpLampMatrix[6] = data;
+    if (cpu_gettotalcpu() > 1 && strncasecmp(Machine->gamedrv->name, "spcpoker", 8)) { // for Ekky sound module
+      locals.auxData = data & 0x7f; // mask out "Happy birthday" tune
+      if (locals.auxData) {
+        cpu_set_nmi_line(LTD_CPU_EKKY, PULSE_LINE);
+      }
+    }
     locals.solenoids = (locals.solenoids & 0xff00ff) | (data << 8);
     coreGlobals.solenoids = locals.solenoids;
     locals.vblankCount = 0;
@@ -229,6 +252,9 @@ static READ_HANDLER(ff_r) {
 
 static MACHINE_INIT(LTD) {
   memset(&locals, 0, sizeof locals);
+  if (cpu_gettotalcpu() > 1) { // for Ekky sound module: mute background sound at start
+    mixer_set_volume(2, 0);
+  }
 }
 
 /*-----------------------------------------
@@ -377,9 +403,9 @@ static MEMORY_WRITE_START(LTD4_writemem)
   {0x0080,0x00ff, MWA_RAM},
   {0x0100,0x01ff, MWA_RAM, &generic_nvram, &generic_nvram_size},
   {0x0800,0x0800, ay8910_1_ctrl_w},
-  {0x0c00,0x0c00, ay8910_1_mute},
+  {0x0c00,0x0c00, ay8910_1_reset},
   {0x1000,0x1000, ay8910_0_ctrl_w},
-  {0x1400,0x1400, ay8910_0_mute},
+  {0x1400,0x1400, ay8910_0_reset},
   {0x1800,0x1800, ay8910_01_ctrl_w},
   {0x1c00,0x1c00, ay8910_01_reset},
   {0x2800,0x2800, ay8910_1_data_w},
@@ -413,4 +439,42 @@ MACHINE_DRIVER_END
 MACHINE_DRIVER_START(LTD4HH)
   MDRV_IMPORT_FROM(LTD4)
   MDRV_CORE_INIT_RESET_STOP(LTDHH,NULL,NULL)
+MACHINE_DRIVER_END
+
+
+// "EKKY" sound board - plays 8 different sounds (including "happy birthday", and a background sound)
+
+static READ_HANDLER(m1000_r) {
+  return ~core_revbyte(locals.auxData);
+}
+
+static WRITE_HANDLER(m1800_w) {
+  if (data & 1) DAC_0_data_w(0, 0x80);
+  if (data & 2) DAC_0_data_w(0, 0x00);
+  if (data & 4) DAC_1_data_w(0, 0x80);
+  if (data & 8) DAC_1_data_w(0, 0x00);
+}
+
+static MEMORY_READ_START(ekky_readmem)
+  {0x0000, 0x07ff, MRA_ROM},
+  {0x1000, 0x1000, m1000_r},
+MEMORY_END
+
+static MEMORY_WRITE_START(ekky_writemem)
+  {0x0000, 0x17ff, MWA_NOP},
+  {0x1800, 0x1800, m1800_w},
+  {0x1801, 0xffff, MWA_NOP},
+MEMORY_END
+
+static struct DACinterface ekky_dacInt = {
+  2,
+  { 30, 15 }
+};
+
+MACHINE_DRIVER_START(LTD3_EKKY)
+  MDRV_IMPORT_FROM(LTD3)
+  MDRV_CPU_ADD_TAG("scpu", Z80, 3579545./2.)
+  MDRV_CPU_MEMORY(ekky_readmem, ekky_writemem)
+  MDRV_CPU_FLAGS(CPU_AUDIO_CPU)
+  MDRV_SOUND_ADD(DAC, ekky_dacInt)
 MACHINE_DRIVER_END

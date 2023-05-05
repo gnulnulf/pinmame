@@ -19,8 +19,13 @@
 #include "common.h"
 
 #ifdef RESAMPLER_SSE_OPT
- #include <xmmintrin.h>
- #include <emmintrin.h>
+ #if (defined(_M_IX86_FP) && _M_IX86_FP >= 2) || defined(__SSE2__) || defined(_M_X64) || defined(_M_AMD64) || defined(__ia64__) || defined(__x86_64__)
+  #include <xmmintrin.h>
+  #include <emmintrin.h>
+ #else // Arm Neon
+  #include <stdint.h>
+  #include "../sse2neon.h"
+ #endif
  #if !defined(_MSC_VER) || !defined(_WIN32) || defined(__clang__)
      typedef union __attribute__ ((aligned (16))) Windows__m128i
      {
@@ -325,7 +330,7 @@ sinc_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
 #ifdef RESAMPLER_SSE_OPT
 static inline __m128 horizontal_add(const __m128 a)
 {
-#if 0 //!! needs SSE3
+#if (defined(_M_ARM) || defined(_M_ARM64) || defined(__arm__) || defined(__arm64__) || defined(__aarch64__)) //!! or SSE3
     const __m128 ftemp = _mm_hadd_ps(a, a);
     return _mm_hadd_ps(ftemp, ftemp);
 #else    
@@ -669,7 +674,7 @@ sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	if (MIN (psrc->last_ratio, data->src_ratio) < 1.0)
 		count /= MIN (psrc->last_ratio, data->src_ratio) ;
 
-	/* Maximum coefficientson either side of center point. */
+	/* Maximum coefficients on either side of center point. */
 	half_filter_chan_len = filter->channels * (int) (lrint (count) + 1) ;
 
 	input_index = psrc->last_position ;
@@ -725,7 +730,7 @@ sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 	psrc->last_position = input_index ;
 
-	/* Save current ratio rather then target ratio. */
+	/* Save current ratio rather than target ratio. */
 	psrc->last_ratio = src_ratio ;
 
 	data->input_frames_used = filter->in_used / filter->channels ;

@@ -451,7 +451,6 @@ DE1S_SOUNDROM288(      "tmntf7.rom",  CRC(59ba0153) SHA1(e7b02a656c67a0d866020a6
                        "tmntf4.rom",  CRC(6c38cd84) SHA1(bbe8797fe1622cb8f0842c4d7159760fed080880))
 DE_ROMEND
 CORE_CLONEDEF(tmnt,101,104,"Teenage Mutant Ninja Turtles (1.01)",1991,"Data East",de_mDEDMD16S1,0)
-
 /* Old readme:
 Location	Chip		ChkSum		Notes
 U2			27010		34E3		Sound
@@ -460,8 +459,18 @@ F-7			27256		1530		Sound
 C5			27C256		5AFF		MPU A1.01
 B5			27128		1DFF		MPU A1.01
 DMD			27512		CDD6		DMD A1.04
-
 According to this, CPU 1.01 could already work with Display 1.04. So the question is if we should use 1.03 or rather 1.04 with CPU 1.01 */
+
+// From Matt: Info about if there are earlier sound roms or not is not known.
+//            All I know is this game had a different topper and mentioned a VUK in the captive ball area.
+DE_ROMSTART48(tmnt_a07,"tmntb5a.007",  CRC(7314f444) SHA1(e18c46009b90d8671a1f15542eb882f391bd57db),
+                       "tmntc5a.007",  CRC(f0ec9ac0) SHA1(c7c70c1185dffa725fbba09aa1c5ea52cabbc4a5))
+DE_DMD16ROM1(          "tmntdsp16.491",CRC(6ed5744e) SHA1(7d02ed19d3bc479386c58282826a3dc06999307f))
+DE1S_SOUNDROM288(      "tmntf7.rom",   CRC(59ba0153) SHA1(e7b02a656c67a0d866020a60ee90e30bef77f67f),
+                       "tmntf6.rom",   CRC(5668d45a) SHA1(65766cb47791ec0a2243015d487f1156a2819fe6),
+                       "tmntf4.rom",   CRC(6c38cd84) SHA1(bbe8797fe1622cb8f0842c4d7159760fed080880))
+DE_ROMEND
+CORE_CLONEDEF(tmnt,a07,104,"Teenage Mutant Ninja Turtles (A 0.7 VUK Prototype)",1991,"Data East",de_mDEDMD16S1,0)
 
 /***************************************************************************/
 /** ALL FOLLOWING GAMES BELOW STARTED USING NEW SOUND BOARD WITH BSMT2000 **/
@@ -1116,6 +1125,16 @@ DE2S_SOUNDROM14444( "tommysnd.u7" ,CRC(ab0b4626) SHA1(31237b4f5e866710506f1336e3
 DE_ROMEND
 CORE_CLONEDEF(tomy,500,400,"Tommy Pinball Wizard, The Who's (5.00 unofficial MOD)",2016,"Data East",de_mDEDMD32S2A,0)
 
+DE_ROMSTARTx0(tomy_301g,"tom_3.00_german_cpu_c5.bin",  CRC(a24ba9c0) SHA1(fab504372df9231a8078af23acfdef185b0d7b05))
+DE_DMD32ROM8x(      "tom_3.00_german_display_rom0.bin",CRC(a8a47c4d) SHA1(62a05ede57ab5d4be4c53155788bb7f899198846))
+DE2S_SOUNDROM14444( "tommysnd.u7" ,CRC(ab0b4626) SHA1(31237b4f5e866710506f1336e3ca2dbd6a89385a),
+                    "tommysnd.u17",CRC(11bb2aa7) SHA1(57b4867c109996861f45ead1ceedb7153aff852e),
+                    "tommysnd.u21",CRC(bb4aeec3) SHA1(2ac6cd25b79584fa6ad2c8a36c3cc58ab8ec0206),
+                    "tommysnd.u36",CRC(208d7aeb) SHA1(af8af2094d1a91c7b4ef8ac6d4f594728e97450f),
+                    "tommysnd.u37",CRC(46180085) SHA1(f761c27532180de313f23b41f02341783be8938b))
+DE_ROMEND
+CORE_CLONEDEF(tomy,301g,400,"Tommy Pinball Wizard, The Who's (3.01 German)",1994,"Data East",de_mDEDMD32S2A,0)
+
 DE_ROMSTARTx0(tomy_h30,"tomcpuh.300", CRC(121b5932) SHA1(e7d7bf8a78baf1c00c8bac908d4646586b8cf1f5))
 DE_DMD32ROM8x(      "tommydva.300",CRC(1f2d0896) SHA1(50c617e30bb843c69a6ca8afeeb751c886f5e6bd))
 DE2S_SOUNDROM14444( "tommysnd.u7" ,CRC(ab0b4626) SHA1(31237b4f5e866710506f1336e3ca2dbd6a89385a),
@@ -1135,6 +1154,16 @@ DE2S_SOUNDROM14444( "tommysnd.u7" ,CRC(ab0b4626) SHA1(31237b4f5e866710506f1336e3
                     "tommysnd.u37",CRC(46180085) SHA1(f761c27532180de313f23b41f02341783be8938b))
 DE_ROMEND
 CORE_CLONEDEF(tomy,102,400,"Tommy Pinball Wizard, The Who's (1.02)",1994,"Data East",de_mDEDMD32S2A,0)
+
+DE_ROMSTARTx0(tomy_102be,"tomcpub.102", CRC(59e4e029) SHA1(55da9eade7a3e08e556799bd27ab4b8347fe87cb))
+DE_DMD32ROM8x(      "tommydvb.102",CRC(f20b9890) SHA1(66a120ba4f3dfd2195a3c430e678ed47f826a73c))
+DE2S_SOUNDROM14444( "tommysnd.u7" ,CRC(ab0b4626) SHA1(31237b4f5e866710506f1336e3ca2dbd6a89385a),
+                    "tommysnd.u17",CRC(11bb2aa7) SHA1(57b4867c109996861f45ead1ceedb7153aff852e),
+                    "tommysnd.u21",CRC(bb4aeec3) SHA1(2ac6cd25b79584fa6ad2c8a36c3cc58ab8ec0206),
+                    "tommysnd.u36",CRC(208d7aeb) SHA1(af8af2094d1a91c7b4ef8ac6d4f594728e97450f),
+                    "tommysnd.u37",CRC(46180085) SHA1(f761c27532180de313f23b41f02341783be8938b))
+DE_ROMEND
+CORE_CLONEDEF(tomy,102be,400,"Tommy Pinball Wizard, The Who's (1.02 Belgian)",1994,"Data East",de_mDEDMD32S2A,0)
 
 /*-------------------------------------------------------------
 / WWF Royal Rumble - CPU Rev 3b /DMD  Type 2 512K Rom - 64K CPU Rom
@@ -1245,7 +1274,7 @@ DE2S_SOUNDROM144("mavu7.dat"  , CRC(427e6ab9) SHA1(6ad9295097f3d498383c91adf4ca6
                  "mavu21.dat" , CRC(be0c6a6f) SHA1(4fee912d9f0d4b196dbfacf06a4202b2fa3037b1))
 DE_ROMEND
 #define input_ports_mav input_ports_des11
-CORE_GAMEDEF(mav,402,"Maverick (4.04, Display 4.02)",1994,"Sega",de_mDEDMD64S2A,0)
+CORE_GAMEDEF(mav,402,"Maverick, The Movie (4.04, Display 4.02)",1994,"Sega",de_mDEDMD64S2A,0)
 
 DE_ROMSTARTx0(mav_401, "mavcpua.404",CRC(9f06bd8d) SHA1(3b931af5455ed9c40f2b6c884427a326bba8f75a))
 DE_DMD64ROM88(   "mavdsar0.401",CRC(35b811af) SHA1(1e235a0f16ef0eecca5b6ec7a2234ed1dc4e4440),
@@ -1254,7 +1283,7 @@ DE2S_SOUNDROM144("mavu7.dat"  , CRC(427e6ab9) SHA1(6ad9295097f3d498383c91adf4ca6
                  "mavu17.dat" , CRC(cba377b8) SHA1(b7551b6cb64357cdacf1a96cedfccbabf4bd070a),
                  "mavu21.dat" , CRC(be0c6a6f) SHA1(4fee912d9f0d4b196dbfacf06a4202b2fa3037b1))
 DE_ROMEND
-CORE_CLONEDEF(mav,401,402,"Maverick (4.04, Display 4.01)",1994,"Sega",de_mDEDMD64S2A,0)
+CORE_CLONEDEF(mav,401,402,"Maverick, The Movie (4.04, Display 4.01)",1994,"Sega",de_mDEDMD64S2A,0)
 
 DE_ROMSTARTx0(mav_400, "mavgc5.400",CRC(e2d0a88b) SHA1(d1571edba47aecc871ac0cfdaabca31774f70fa1))
 DE_DMD64ROM88(   "mavdisp0.400",CRC(b6069484) SHA1(2878d9a0151194bd4a0e12e2f75b02a5d7316b68),
@@ -1263,7 +1292,16 @@ DE2S_SOUNDROM144("mavu7.dat"  , CRC(427e6ab9) SHA1(6ad9295097f3d498383c91adf4ca6
                  "mavu17.dat" , CRC(cba377b8) SHA1(b7551b6cb64357cdacf1a96cedfccbabf4bd070a),
                  "mavu21.dat" , CRC(be0c6a6f) SHA1(4fee912d9f0d4b196dbfacf06a4202b2fa3037b1))
 DE_ROMEND
-CORE_CLONEDEF(mav,400,402,"Maverick (4.00)",1994,"Sega",de_mDEDMD64S2A,0)
+CORE_CLONEDEF(mav,400,402,"Maverick, The Movie (4.00)",1994,"Sega",de_mDEDMD64S2A,0)
+
+DE_ROMSTARTx0(mav_200, "mavcpua.200",CRC(0d9e9bc3) SHA1(23342950c2343591bdf168e3bc92ca669a702ffa))
+DE_DMD64ROM88(   "mavdisp0.200",CRC(8a85785f) SHA1(af1b8b972359cce4bfd82743e90be8066fa57c31),
+                 "mavdisp3.200",CRC(2098ad22) SHA1(2ccf9c455b89a6b439957199bca75e299e18ac62))
+DE2S_SOUNDROM144("mavu7.dat"  , CRC(427e6ab9) SHA1(6ad9295097f3d498383c91adf4ca667f797f29b1),
+                 "mavu17.dat" , CRC(cba377b8) SHA1(b7551b6cb64357cdacf1a96cedfccbabf4bd070a),
+                 "mavu21.dat" , CRC(be0c6a6f) SHA1(4fee912d9f0d4b196dbfacf06a4202b2fa3037b1))
+DE_ROMEND
+CORE_CLONEDEF(mav,200,402,"Maverick, The Movie (2.00)",1994,"Sega",de_mDEDMD64S2A,0)
 
 DE_ROMSTARTx0(mav_100, "mavcpu.100",CRC(13fdc959) SHA1(f8155f0fe5d4c3fe55000ab3b57f298fd9229fef)) // "Data East code"
 DE_DMD64ROM88(   "mavdsp0.100", CRC(3e01f5c8) SHA1(8e40f399c77aa17bebbefe04742ff2ff95508323),
@@ -1272,7 +1310,7 @@ DE2S_SOUNDROM144("mavu7.dat"  , CRC(427e6ab9) SHA1(6ad9295097f3d498383c91adf4ca6
                  "mavu17.dat" , CRC(cba377b8) SHA1(b7551b6cb64357cdacf1a96cedfccbabf4bd070a),
                  "mavu21.dat" , CRC(be0c6a6f) SHA1(4fee912d9f0d4b196dbfacf06a4202b2fa3037b1))
 DE_ROMEND
-CORE_CLONEDEF(mav,100,402,"Maverick (1.00)",1994,"Data East",de_mDEDMD64S2A,0)
+CORE_CLONEDEF(mav,100,402,"Maverick, The Movie (1.00)",1994,"Data East",de_mDEDMD64S2A,0)
 
 /*-------------------------------------------------------------
 / Mary Shelley's Frankenstein - CPU Rev 3b /DMD  Type 3 2x512K Rom - 64K CPU Rom
@@ -1300,6 +1338,18 @@ DE2S_SOUNDROM1444(     "frsnd.u7"  ,  CRC(084f856c) SHA1(c91331a32b565c2ed3f9615
 DE_ROMEND
 #define input_ports_frankstg input_ports_frankst
 CORE_CLONEDEFNV(frankstg,frankst,"Frankenstein, Mary Shelley's (German)",1995,"Sega",de_mDEDMD64S2A,0)
+
+#define init_franksti init_frankst
+DE_ROMSTARTx0(franksti,"franka.103", CRC(a9aba9be) SHA1(1cc22fcbc0f51a17037637c04e606579956c9cba))
+DE_DMD64ROM88(         "FrankDispRom0_I1.03", CRC(6be7cc1c) SHA1(418ea4843c1380478a88aa08a63ab8ec98a55ac3),
+                       "FrankDispRom3_I1.03", CRC(9e08281e) SHA1(dcebeccf86b20cbd89449f1f9f1879bcb7abb836))
+DE2S_SOUNDROM1444(     "frsnd.u7"  , CRC(084f856c) SHA1(c91331a32b565c2ed3f96156f44143dc22009e8e),
+                       "frsnd.u17" , CRC(0da904d6) SHA1(e190f1a35147b2f39224832969ca7b1d4a30f6cc),
+                       "frsnd.u21" , CRC(14d4bc12) SHA1(9e7005c5bd0afe7f9c9215b39878496640cdea77),
+                       "frsnd.u36" , CRC(9964d721) SHA1(5ea0bc051d1909bee80d3feb6b7350b6307b6dcb))
+DE_ROMEND
+#define input_ports_franksti input_ports_frankst
+CORE_CLONEDEFNV(franksti,frankst,"Frankenstein, Mary Shelley's (Italian)",1995,"Sega",de_mDEDMD64S2A,0)
 
 //Start of the Portals Diagnostic Menu System
 /*-------------------------------------------------------------

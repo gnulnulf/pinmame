@@ -121,8 +121,6 @@
 #include "p-roc/p-roc.h"
 #endif /* PINMAME && PROC_SUPPORT */
 #if defined(PINMAME) && defined(LISY_SUPPORT)
- #include "lisy/lisy80.h"
- #include "lisy/lisy1.h"
  #include "lisy/utils.h"
 #endif /* PINMAME && LISY_SUPPORT */
 #include "../ext/vgm/vgmwrite.h"
@@ -767,8 +765,6 @@ static int vh_open(void)
 	Machine->uifont = builduifont();
 	if (Machine->uifont == NULL)
 		goto cant_build_uifont;
-//Machine->uifont->colortable[0] = 0;
- // Machine->uifont->colortable[1] = 0xffff;
 
 #ifdef MAME_DEBUG
 	/* if the debugger is enabled, initialize its bitmap and font */
@@ -2112,8 +2108,8 @@ static int validitychecks(void)
 
 					if (!IS_FRAC(drv.gfxdecodeinfo[j].gfxlayout->total))
 					{
-						int len, avail, k, start;
-						start = 0;
+						UINT32 len, avail, k;
+						UINT32 start = 0;
 						for (k = 0;k < MAX_GFX_PLANES;k++)
 						{
 							if (drv.gfxdecodeinfo[j].gfxlayout->planeoffset[k] > start)

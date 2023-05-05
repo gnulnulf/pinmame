@@ -10,7 +10,9 @@ with around 750 emulated unique Pinball machines and many more clones/revisions 
 It is available in various forms:
 
 Standalone Emulator (PinMAME (command line), PinMAME32 (UI))
+
 COM library (VPinMAME) to steer simulators like [Visual Pinball 8/9/X](https://github.com/vpinball/vpinball)
+
 library (libPinMAME) to steer simulators like [VPE](https://github.com/freezy/VisualPinball.Engine)
 
 Currently, the following pinball hardware is emulated:
@@ -25,7 +27,7 @@ Zaccaria, Taito of Brazil, Midway, Capcom, Alvin G. and Co., Technoplay, Mr.Game
 Nuova Bell, Inder, Juegos Populares, LTD, Peyper, Sonic, Allied Leisure, Fascination, Int.,
 Sleic, Playmatic, NSM, Grand Products, Jac van Ham, Videodens, Astro, Micropin,
 Christian Tabart, Jeutel, Valley Manufacturing, MAC / CICPlay, Stargame, Barni,
-Splin Bingo, Playbar, Cirsa, Nondum / CIFA, Maibesa, ManilaMatic, Joctronic, Mirco,
+Seeben/Sirmo, Splin Bingo, Playbar, Cirsa, Nondum / CIFA, Maibesa, ManilaMatic, Joctronic, Mirco,
 Sport Matic, Regama, Illinois Pinball.
 
 *Note: Emulation is not 100% working and correct for all hardware, but very close for the vast majority.*

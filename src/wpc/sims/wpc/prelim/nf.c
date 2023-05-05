@@ -1,3 +1,5 @@
+// license:BSD-3-Clause
+
 /*******************************************************************************
  Preliminary No Fear: Dangerous Sports (Williams, 1995) Pinball Simulator
 
@@ -238,8 +240,8 @@ static sim_tInportData nf_inportData[] = {
 /  ROM definitions
 /------------------*/
 WPC_ROMSTART(nf,23x,"nofe2_3x.rom",0x80000,CRC(d853650b) SHA1(06d58f86c68ccdc242d6b96a22c6226758dc3e44))
-DCS_SOUNDROM6x("nfu2s",CRC(136caeb9) SHA1(61a56b29a7655e8aab4987d300173e1acf27c77c),
-               "nfu3s",CRC(983e5578) SHA1(374b1397abbdde5fd9257fd45fd8613c94fbd02d),
+DCS_SOUNDROM6x("nfu2s",CRC(136caeb9) SHA1(61a56b29a7655e8aab4987d300173e1acf27c77c), // L-2
+               "nfu3s",CRC(983e5578) SHA1(374b1397abbdde5fd9257fd45fd8613c94fbd02d), // this and all below L-1 (?)
                "nfu4s",CRC(9469cd40) SHA1(8a1dd1088f24018f48b114c0b27f0331263d4eea),
                "nfu5s",CRC(e14d4315) SHA1(63d5ae800cc8a750ea2e3a87c646ab175b60abc7),
                "nfu6s",CRC(40a58903) SHA1(78f7e99f39efc83f3cf17801a30e6dc6e4864125),
@@ -291,8 +293,11 @@ DCS_SOUNDROM6x("nfu2s",CRC(136caeb9) SHA1(61a56b29a7655e8aab4987d300173e1acf27c7
                "nfu7s",CRC(61002bdd) SHA1(e623399ff95f59a4ab7efdd7c69b1a1370479398))
 WPC_ROMEND
 
-WPC_ROMSTART(nf,10,"nofe1_0.rom",0x80000,CRC(f8f6521c) SHA1(5c26f4878f257b157c2a1c46995ec8100fa20723))
-DCS_SOUNDROM6x("nfu2s",CRC(136caeb9) SHA1(61a56b29a7655e8aab4987d300173e1acf27c77c),
+// It is not clear from the ROMs official revision history when SND-U2.SL1 (which is the only one to be updated to get SL-2) was exchanged with SL-2. At least one 0.8x machine definetly had SL-1 ROMs in it,
+// and the revision history also mentions SL-1's checksum explicitly for Game Rev 1.0.
+
+WPC_ROMSTART(nf,10f,"nofe1_0.rom",0x80000,CRC(f8f6521c) SHA1(5c26f4878f257b157c2a1c46995ec8100fa20723))
+DCS_SOUNDROM6x("SND-U2.SL1",CRC(84f48e27) SHA1(cdf0ff55c1493ea5ac7cef618c985f41442c6f60),
                "nfu3s",CRC(983e5578) SHA1(374b1397abbdde5fd9257fd45fd8613c94fbd02d),
                "nfu4s",CRC(9469cd40) SHA1(8a1dd1088f24018f48b114c0b27f0331263d4eea),
                "nfu5s",CRC(e14d4315) SHA1(63d5ae800cc8a750ea2e3a87c646ab175b60abc7),
@@ -301,7 +306,7 @@ DCS_SOUNDROM6x("nfu2s",CRC(136caeb9) SHA1(61a56b29a7655e8aab4987d300173e1acf27c7
 WPC_ROMEND
 
 WPC_ROMSTART(nf,101,"nofe1_01.rom",0x80000,CRC(4eeb8add) SHA1(c482ae6f7229696bc0cbfd50638dadc8404a98c8))
-DCS_SOUNDROM6x("nfu2s",CRC(136caeb9) SHA1(61a56b29a7655e8aab4987d300173e1acf27c77c),
+DCS_SOUNDROM6x("SND-U2.SL1",CRC(84f48e27) SHA1(cdf0ff55c1493ea5ac7cef618c985f41442c6f60),
                "nfu3s",CRC(983e5578) SHA1(374b1397abbdde5fd9257fd45fd8613c94fbd02d),
                "nfu4s",CRC(9469cd40) SHA1(8a1dd1088f24018f48b114c0b27f0331263d4eea),
                "nfu5s",CRC(e14d4315) SHA1(63d5ae800cc8a750ea2e3a87c646ab175b60abc7),
@@ -310,7 +315,7 @@ DCS_SOUNDROM6x("nfu2s",CRC(136caeb9) SHA1(61a56b29a7655e8aab4987d300173e1acf27c7
 WPC_ROMEND
 
 WPC_ROMSTART(nf,08x,"nofe0_8x.rom",0x80000,CRC(64871e6a) SHA1(0e116104b06446b0d435f715c33535080cdd2378))
-DCS_SOUNDROM6x("SND-U2.SL1",CRC(84f48e27) SHA1(cdf0ff55c1493ea5ac7cef618c985f41442c6f60), // this was found separate from nofe0_8x.rom, so we just add it to the oldest revision we have
+DCS_SOUNDROM6x("SND-U2.SL1",CRC(84f48e27) SHA1(cdf0ff55c1493ea5ac7cef618c985f41442c6f60),
                "nfu3s",CRC(983e5578) SHA1(374b1397abbdde5fd9257fd45fd8613c94fbd02d),
                "nfu4s",CRC(9469cd40) SHA1(8a1dd1088f24018f48b114c0b27f0331263d4eea),
                "nfu5s",CRC(e14d4315) SHA1(63d5ae800cc8a750ea2e3a87c646ab175b60abc7),
@@ -321,15 +326,15 @@ WPC_ROMEND
 /*--------------
 /  Game drivers
 /---------------*/
-CORE_GAMEDEF(nf,23x,"No Fear: Dangerous Sports (2.3X)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,23,23x,"No Fear: Dangerous Sports (2.3)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,23f,23x,"No Fear: Dangerous Sports (2.3F French)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,22,23x,"No Fear: Dangerous Sports (2.2)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,20,23x,"No Fear: Dangerous Sports (2.0)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,11x,23x,"No Fear: Dangerous Sports (1.1X)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,10,23x,"No Fear: Dangerous Sports (1.0)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,101,23x,"No Fear: Dangerous Sports (1.01 LED Ghost Fix)",1995,"Williams",wpc_mSecurityS,0)
-CORE_CLONEDEF(nf,08x,23x,"No Fear: Dangerous Sports (0.8X, SL-1)",1995,"Williams",wpc_mSecurityS,0)
+CORE_GAMEDEF(nf,23x,"No Fear: Dangerous Sports (2.3X Export / S1.1)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,23,23x,"No Fear: Dangerous Sports (2.3 / S1.1)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,23f,23x,"No Fear: Dangerous Sports (2.3F French / S1.1)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,22,23x,"No Fear: Dangerous Sports (2.2 / S1.1)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,20,23x,"No Fear: Dangerous Sports (2.0 / S1.1)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,11x,23x,"No Fear: Dangerous Sports (1.1X Export / S1.1)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,10f,23x,"No Fear: Dangerous Sports (1.0F French / S1.0)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,101,23x,"No Fear: Dangerous Sports (1.01F LED Ghost Fix / S1.0)",1995,"Williams",wpc_mSecurityS,0)
+CORE_CLONEDEF(nf,08x,23x,"No Fear: Dangerous Sports (0.8X Export Prototype / S1.0)",1995,"Williams",wpc_mSecurityS,0)
 
 /*-----------------------
 / Simulation Definitions

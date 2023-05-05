@@ -303,6 +303,14 @@ S11CS_SOUNDROM88(    "pbot_u4.l1",  CRC(de5926bd) SHA1(3d111e27c5f0c8c0afc5fe5cc
                      "pbot_u19.l1", CRC(40eb4e9f) SHA1(07b0557b35599a2dd5aa66a306fbbe8f50eed998))
 S11_ROMEND
 
+S11_ROMSTART48(pb,j2,"PEMBOT_J2_U26.bin", CRC(8d9ab38c) SHA1(7aaef79943f0900e2270b46c14f1d391a7980865),
+                     "PEMBOT_J2_U27.bin", CRC(abe10eed) SHA1(542a9f5bcd676edee6b8ce71830481d7b7a79fea))
+S11XS_SOUNDROM88(    "pbot_u21.l1", CRC(3eab88d9) SHA1(667e3b675e2ae8fec6a6faddb9b0dd5531d64f8f),
+                     "pbot_u22.l1", CRC(a2d2c9cb) SHA1(46437dc54538f1626caf41a2818ddcf8000c44e4))
+S11CS_SOUNDROM88(    "pbot_u4.l1",  CRC(de5926bd) SHA1(3d111e27c5f0c8c0afc5fe5cc45bf77c12b69228),
+                     "pbot_u19.l1", CRC(40eb4e9f) SHA1(07b0557b35599a2dd5aa66a306fbbe8f50eed998))
+S11_ROMEND
+
 CORE_GAMEDEF(pb, l5, "Pin-Bot (L-5)", 1986, "Williams", s11_mS11XSL,0)
 CORE_CLONEDEF(pb,l5h,l5,"Pin-Bot (L-5, Free Play / Solar Value Mod)", 2012, "Francis", s11_mS11XSL,0)
 CORE_CLONEDEF(pb,l3,l5, "Pin-Bot (L-3)", 1986, "Williams", s11_mS11XSL,0)
@@ -310,6 +318,7 @@ CORE_CLONEDEF(pb,l2,l5, "Pin-Bot (L-2)", 1986, "Williams", s11_mS11XSL,0)
 CORE_CLONEDEF(pb,l1,l5, "Pin-Bot (L-1)", 1986, "Williams", s11_mS11XSL,0)
 CORE_CLONEDEF(pb,p4,l5, "Pin-Bot (P-4 Prototype)", 1986, "Williams", s11_mS11XSL,0)
 CORE_CLONEDEF(pb,j1,l5, "Pin-Bot (PEMBOT (no relation) J-1)", 2020, "A.M. Thurnherr", s11_mS11XSL,0)
+CORE_CLONEDEF(pb,j2,l5, "Pin-Bot (PEMBOT (no relation) J-2)", 2023, "idealjoker", s11_mS11XSL,0) // "Minor bug fixes and improvements"
 
 /*--------------------
 / F-14 Tomcat 5/87
@@ -545,6 +554,17 @@ S11CS_SOUNDROM88(       "swrd_u4.l1",  CRC(272b509c) SHA1(756d3783f664ca1c41dd1d
 S11_ROMEND
 #define input_ports_swrds input_ports_s11
 CORE_GAMEDEF(swrds, l2, "Swords of Fury (L-2)", 1988, "Williams", s11_mS11BS, 0)
+
+// single u27 rom that upgrades L1 to German Language Text L2 (labeled as G2), u26 was same rom content as swrd_u26.l1 (was also labeled as REV1)
+
+S11_ROMSTART48(swrds,lg2,"swrd_u26.l1", CRC(e7a54874) SHA1(9f3486a0eed32ab0919805bed771ffd214a78967),
+                         "swrd_u27g.l2",CRC(ef7194d4) SHA1(45b4fc316b603921fdafaf2638a46a94e6efc190))
+S11XS_SOUNDROM88(        "swrd_u21.l1", CRC(ee8b0a64) SHA1(c2c52059a9a5f7c0abcfdd76cfc6d5b5451f7d1e),
+                         "swrd_u22.l1", CRC(73dcdbb0) SHA1(66f5b3804442a1742b6fb3cccf539c4df956b3f2))
+S11CS_SOUNDROM88(        "swrd_u4.l1",  CRC(272b509c) SHA1(756d3783f664ca1c41dd1d12032330b74c3f89ea),
+                         "swrd_u19.l1", CRC(a22f84fa) SHA1(1731e86e85cca2d283512d5048c787df3970c9c5))
+S11_ROMEND
+CORE_CLONEDEF(swrds, lg2, l2, "Swords of Fury (LG-2 German)", 1988, "Williams", s11_mS11BS, 0) // actually reports as L-2, not LG-2 (on chiplabel said G2)
 
 S11_ROMSTART48(swrds,l1,"swrd_u26.l1", CRC(e7a54874) SHA1(9f3486a0eed32ab0919805bed771ffd214a78967),
                         "swrd_u27.l1", CRC(885dc3d6) SHA1(26463efb476c0bbfc3cb49b450167c4a985672bf))

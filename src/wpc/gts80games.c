@@ -685,7 +685,7 @@ GTS80_ROMEND
 CORE_CLONEDEFNV(rockyf,rocky,"Rocky (French Speech)",1982,"Gottlieb",gl_mGTS80SS,0)
 
 /*-------------------------------------------------------------------
-/ Spirit (#673)
+/ Spirit (#673) (Note that there is no rev. 1 known, only rev. 2)
 /-------------------------------------------------------------------*/
 static core_tLCDLayout dispSpirit[] = {
   DISP_SEG_IMPORT(dispNumeric3), {6, 9,50,6,CORE_SEG9}, {0}
@@ -696,7 +696,24 @@ GTS80SS22_ROMSTART("673-s1.snd", CRC(fd3062ae) SHA1(6eae04ec470afd4363ca448ee106
                    "673-s2.snd", CRC(7cf923f1) SHA1(2182324c30e8cb22735e59b74d4f6b268d3750e6))
 GTS80_ROMEND
 #define input_ports_spirit input_ports_gts80
-CORE_CLONEDEFNV(spirit,gts80a,"Spirit",1982,"Gottlieb",gl_mGTS80SS,0)
+CORE_CLONEDEFNV(spirit,gts80a,"Spirit (rev. 2)",1982,"Gottlieb",gl_mGTS80SS,0)
+
+INIT_S80A(spirit0, dispSpirit, SNDBRD_GTS80SS,0)
+GTS80_1_ROMSTART  ("673.bin",    CRC(c54c717a) SHA1(35e318a31e7b6d32b7f277ff177e890d2dce9da9))
+GTS80SS22_ROMSTART("673-s1.snd", CRC(fd3062ae) SHA1(6eae04ec470afd4363ca448ee106e3e89fbf471e),
+                   "673-s2.snd", CRC(7cf923f1) SHA1(2182324c30e8cb22735e59b74d4f6b268d3750e6))
+GTS80_ROMEND
+#define input_ports_spirit0 input_ports_gts80
+CORE_CLONEDEFNV(spirit0,spirit,"Spirit",1982,"Gottlieb",gl_mGTS80SS,0)
+
+// Fixes bonus bug on "Spot Targets" and the "BA" and "LL" target order bug:
+INIT_S80A(spirit3, dispSpirit, SNDBRD_GTS80SS,0)
+GTS80_1_ROMSTART  ("673-3.bin",  CRC(20aff323) SHA1(89c546ad87080604b7aa68845f2bdd53f54bff1b))
+GTS80SS22_ROMSTART("673-s1.snd", CRC(fd3062ae) SHA1(6eae04ec470afd4363ca448ee106e3e89fbf471e),
+                   "673-s2.snd", CRC(7cf923f1) SHA1(2182324c30e8cb22735e59b74d4f6b268d3750e6))
+GTS80_ROMEND
+#define input_ports_spirit3 input_ports_gts80
+CORE_CLONEDEFNV(spirit3,spirit,"Spirit (rev. 3 MOD)",2023,"Flipprojets",gl_mGTS80SS,0)
 
 /*-------------------------------------------------------------------
 / Striker (#675)
@@ -719,7 +736,7 @@ CORE_CLONEDEFNV(striker,gts80a,"Striker",1982,"Gottlieb",gl_mGTS80SS,0)
 /*-------------------------------------------------------------------
 / Punk! (#674)
 /-------------------------------------------------------------------*/
-INIT_S80A(punk, dispNumeric3, SNDBRD_GTS80SS_VOTRAX,0)
+INIT_S80A(punk, dispNumeric3, SNDBRD_GTS80SS,0)
 GTS80_1_ROMSTART  ("674.cpu",    CRC(70cccc57) SHA1(c2446ecf072174ce3e8524c1a01b1eea72875226))
 GTS80SS22_ROMSTART("674-s1.snd", CRC(b75f79d5) SHA1(921774dacccb025c9465ea7e24534aca2d29d6f1),
                    "674-s2.snd", CRC(005d123a) SHA1(ebe258786de09488ec0a104a47e208c66b3613b5))

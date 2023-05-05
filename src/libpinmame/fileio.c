@@ -39,6 +39,8 @@ FILE *stdout_file;
 FILE *stderr_file;
 #endif
 
+extern void libpinmame_log_message(const char* format, ...);
+
 #ifdef MESS
 #include "image.h"
 #endif
@@ -553,7 +555,7 @@ osd_file *osd_fopen(int pathtype, int pathindex, const char *filename, const cha
 
 	/* find an empty file handle */
 	for (i = 0; i < MAX_OPEN_FILES; i++)
-		if (openfile[i].handle == NULL || openfile[i].handle == INVALID_HANDLE_VALUE)
+		if (!openfile[i].handle || openfile[i].handle == INVALID_HANDLE_VALUE)
 			break;
 	if (i == MAX_OPEN_FILES)
 		return NULL;
@@ -820,7 +822,7 @@ void osd_fclose(osd_file *file)
 #else
 		close(file->handle);
 #endif
-	file->handle = NULL;
+	file->handle = 0;
 }
 
 
@@ -836,10 +838,9 @@ void osd_fclose(osd_file *file)
 int osd_display_loading_rom_message(const char *name,struct rom_load_data *romdata)
 {
 	if (name)
-		fprintf(stdout, "osd_display_loading_rom_message(): loading %-12s...\n", name);
+		libpinmame_log_message("osd_display_loading_rom_message(): loading %-12s...", name);
 	else
-		fprintf(stdout, "osd_display_loading_rom_message():\n");
-	fflush(stdout);
+		libpinmame_log_message("osd_display_loading_rom_message():");
 
 	return 0;
 }

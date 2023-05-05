@@ -114,16 +114,12 @@ static WRITE_HANDLER(gts80s_riot6530_0_ram_w)
 	data;
 }
 
-static WRITE_HANDLER(riot_w) {
-  riot6530_0_w(offset & 0x0f, data);
-}
-
 /*--------------
 /  Memory map
 /---------------*/
 MEMORY_READ_START(GTS80S_readmem)
 { 0x0000, 0x01ff, MRA_RAM},
-{ 0x0200, 0x020f, riot6530_0_r},
+{ 0x0200, 0x03ff, riot6530_0_r},
 { 0x0400, 0x0fff, MRA_ROM},
 { 0x1000, 0x10ff, MRA_RAM},
 { 0xf800, 0xffff, MRA_ROM},
@@ -131,7 +127,7 @@ MEMORY_END
 
 MEMORY_WRITE_START(GTS80S_writemem)
 { 0x0000, 0x01ff, gts80s_riot6530_0_ram_w},
-{ 0x0200, 0x020f, riot_w},
+{ 0x0200, 0x03ff, riot6530_0_w},
 { 0x0400, 0x0fff, MWA_ROM},
 { 0x1000, 0x10ff, gts80s_riot6530_0_ram_w},
 { 0xf800, 0xffff, MWA_ROM},
@@ -450,7 +446,7 @@ static WRITE_HANDLER(GTS80SS_ext_board_3_w) {
 static WRITE_HANDLER(GTS80SS_vs_latch_w) {
 	logerror("vs_latch: %03x: %02x / %d\n", offset, data, GTS80SS_locals.device);
 	if (GTS80SS_locals.boardData.subType) {
-		if (GTS80SS_locals.device < 7) {
+		if (cpu_gettotalcpu() < 3 || GTS80SS_locals.device < 7) { // keep the old mute in place for caveman only!
 			votraxsc01_set_volume(100);
 			votraxsc01_w(0, data^0x3f);
 		}

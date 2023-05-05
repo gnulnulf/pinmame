@@ -21,6 +21,7 @@ int g_fHandleKeyboard = 0;
 int g_fHandleMechanics = 0;
 int g_fDumpFrames = 0;
 int g_fPause = 0;
+PINMAME_DMD_MODE g_fDmdMode = BRIGHTNESS;
 
 #ifdef VPINMAME_ALTSOUND
 char g_szGameName[256] = { 0 }; // String containing requested game name (may be different from ROM if aliased)
@@ -31,15 +32,16 @@ static int _isRunning = 0;
 static int _timeToQuit = 0;
 static PinmameConfig* _p_Config = nullptr;
 static std::thread* _p_gameThread = nullptr;
+static void* _p_userData = nullptr;
 
 static int _displaysInit;
-static UINT8 _displayData[MAX_DISPLAYS][DMD_MAXX * DMD_MAXY];
+static UINT8 _displayData[PINMAME_MAX_DISPLAYS][DMD_MAXX * DMD_MAXY];
 
 static int _mechInit[MECH_MAXMECH / 2];
 static PinmameMechInfo _mechInfo[MECH_MAXMECH / 2];
 
 static PinmameAudioInfo _audioInfo;
-static float _audioData[ACCUMULATOR_SAMPLES * 2];
+static float _audioData[PINMAME_ACCUMULATOR_SAMPLES * 2];
 
 static const PinmameKeyboardInfo _keyboardInfo[] = {
 	{ "A", A, KEYCODE_A },
@@ -220,7 +222,7 @@ extern "C" const struct KeyboardInfo* osd_get_key_list(void) {
 
 extern "C" int osd_is_key_pressed(const int keycode) {
 	if (_p_Config->fn_IsKeyPressed) {
-		return (*(_p_Config->fn_IsKeyPressed))((PINMAME_KEYCODE)keycode);
+		return (*(_p_Config->fn_IsKeyPressed))((PINMAME_KEYCODE)keycode, _p_userData);
 	}
 	return 0;
 }
@@ -245,9 +247,9 @@ extern "C" int osd_start_audio_stream(const int stereo) {
 		_audioInfo.sampleRate = Machine->sample_rate;
 		_audioInfo.framesPerSecond = Machine->drv->frames_per_second;
 		_audioInfo.samplesPerFrame = Machine->sample_rate / Machine->drv->frames_per_second;
-		_audioInfo.bufferSize = ACCUMULATOR_SAMPLES * 2;
+		_audioInfo.bufferSize = PINMAME_ACCUMULATOR_SAMPLES * 2;
 
-		return (*(_p_Config->cb_OnAudioAvailable))(&_audioInfo);
+		return (*(_p_Config->cb_OnAudioAvailable))(&_audioInfo, _p_userData);
 	}
 	return 0;
 }
@@ -261,14 +263,14 @@ extern "C" int osd_update_audio_stream(INT16* p_buffer) {
 		int samplesThisFrame = mixer_samples_this_frame();
 
 		if (_p_Config->audioFormat == AUDIO_FORMAT_INT16) {
-			return (*(_p_Config->cb_OnAudioUpdated))((void*)p_buffer, samplesThisFrame);
+			return (*(_p_Config->cb_OnAudioUpdated))((void*)p_buffer, samplesThisFrame, _p_userData);
 		}
 
 		for (int i = 0; i < samplesThisFrame * _audioInfo.channels; i++) {
 			_audioData[i] = ((float)p_buffer[i]) / 32768.0;
 		}
 
-		return (*(_p_Config->cb_OnAudioUpdated))((void*)_audioData, samplesThisFrame);
+		return (*(_p_Config->cb_OnAudioUpdated))((void*)_audioData, samplesThisFrame, _p_userData);
 	}
 	return 0;
 }
@@ -352,13 +354,19 @@ extern "C" void libpinmame_update_display(const int index, const struct core_dis
 			if (dmd) {
 				if (memcmp(_displayData[index], p_data, (displayLayout.width * displayLayout.height) * sizeof(UINT8))) {
 					memcpy(_displayData[index], p_data, (displayLayout.width * displayLayout.height) * sizeof(UINT8));
-					(*(_p_Config->cb_OnDisplayUpdated))(index, _displayData[index], &displayLayout);
+					(*(_p_Config->cb_OnDisplayUpdated))(index, _displayData[index], &displayLayout, _p_userData);
+				}
+				else {
+					(*(_p_Config->cb_OnDisplayUpdated))(index, nullptr, &displayLayout, _p_userData);
 				}
 			}
 			else {
 				if (memcmp(_displayData[index], p_data, displayLayout.length * sizeof(UINT16))) {
 					memcpy(_displayData[index], p_data, displayLayout.length * sizeof(UINT16));
-					(*(_p_Config->cb_OnDisplayUpdated))(index, _displayData[index], &displayLayout);
+					(*(_p_Config->cb_OnDisplayUpdated))(index, _displayData[index], &displayLayout, _p_userData);
+				}
+				else {
+					(*(_p_Config->cb_OnDisplayUpdated))(index, nullptr, &displayLayout, _p_userData);
 				}
 			}
 		}
@@ -368,7 +376,7 @@ extern "C" void libpinmame_update_display(const int index, const struct core_dis
 		const int displayCount = GetDisplayCount(core_gameData->lcdLayout, &displayCountIndex);
 
 		if (_p_Config->cb_OnDisplayAvailable) {
-			(*(_p_Config->cb_OnDisplayAvailable))(index, displayCount, &displayLayout);
+			(*(_p_Config->cb_OnDisplayAvailable))(index, displayCount, &displayLayout, _p_userData);
 		}
 
 		if (index == displayCount - 1) {
@@ -383,7 +391,7 @@ extern "C" void libpinmame_update_display(const int index, const struct core_dis
 
 extern "C" void libpinmame_forward_console_data(void* p_data, int size) {
 	if (_p_Config->cb_OnConsoleDataUpdated) {
-		(*(_p_Config->cb_OnConsoleDataUpdated))(p_data, size);
+		(*(_p_Config->cb_OnConsoleDataUpdated))(p_data, size, _p_userData);
 	}
 }
 
@@ -395,7 +403,7 @@ extern "C" void OnStateChange(const int state) {
 	_isRunning = state;
 
 	if (_p_Config->cb_OnStateUpdated) {
-		(*(_p_Config->cb_OnStateUpdated))(state);
+		(*(_p_Config->cb_OnStateUpdated))(state, _p_userData);
 	}
 }
 
@@ -403,9 +411,26 @@ extern "C" void OnStateChange(const int state) {
  * OnSolenoid
  ******************************************************/
 
-extern "C" void OnSolenoid(const int solenoid, const int isActive) {
+extern "C" void OnSolenoid(const int solenoid, const int state) {
 	if (_p_Config->cb_OnSolenoidUpdated) {
-		(*(_p_Config->cb_OnSolenoidUpdated))(solenoid, isActive);
+		PinmameSolenoidState solenoidState;
+		solenoidState.solNo = solenoid;
+		solenoidState.state = state;
+
+		(*(_p_Config->cb_OnSolenoidUpdated))(&solenoidState, _p_userData);
+	}
+}
+
+/******************************************************
+ * libpinmame_log_message
+ ******************************************************/
+
+extern "C" void libpinmame_log_message(const char* format, ...) {
+	if (_p_Config->cb_OnLogMessage) {
+		va_list args;
+		va_start(args, format);
+		(*(_p_Config->cb_OnLogMessage))(format, args, _p_userData);
+		va_end(args);
 	}
 }
 
@@ -424,7 +449,7 @@ extern "C" void libpinmame_update_mech(const int mechNo, mech_tMechData* p_mechD
 			_mechInfo[index].speed = speed;
 
 			if (_p_Config->cb_OnMechUpdated) {
-				(*(_p_Config->cb_OnMechUpdated))(index, &_mechInfo[index]);
+				(*(_p_Config->cb_OnMechUpdated))(index, &_mechInfo[index], _p_userData);
 			}
 		}
 	}
@@ -439,7 +464,7 @@ extern "C" void libpinmame_update_mech(const int mechNo, mech_tMechData* p_mechD
 		_mechInfo[index].speed = speed;
 
 		if (_p_Config->cb_OnMechAvailable) {
-			(*(_p_Config->cb_OnMechAvailable))(index, &_mechInfo[index]);
+			(*(_p_Config->cb_OnMechAvailable))(index, &_mechInfo[index], _p_userData);
 		}
 	}
 }
@@ -463,7 +488,7 @@ void StartGame(const int gameNum) {
  * PinmameGetGame
  ******************************************************/
 
-LIBPINMAME_API PINMAME_STATUS PinmameGetGame(const char* const p_name, PinmameGameCallback callback) {
+LIBPINMAME_API PINMAME_STATUS PinmameGetGame(const char* const p_name, PinmameGameCallback callback, const void* p_userData) {
 	if (_p_Config == nullptr) {
 		return CONFIG_NOT_SET;
 	}
@@ -488,7 +513,7 @@ LIBPINMAME_API PINMAME_STATUS PinmameGetGame(const char* const p_name, PinmameGa
 	game.found = RomsetMissing(gameNum) == 0;
 
 	if (callback) {
-		(*callback)(&game);
+		(*callback)(&game, p_userData);
 	}
 
 	return OK;
@@ -498,7 +523,7 @@ LIBPINMAME_API PINMAME_STATUS PinmameGetGame(const char* const p_name, PinmameGa
  * PinmameGetGames
  ******************************************************/
 
-LIBPINMAME_API PINMAME_STATUS PinmameGetGames(PinmameGameCallback callback) {
+LIBPINMAME_API PINMAME_STATUS PinmameGetGames(PinmameGameCallback callback, const void* p_userData) {
 	if (_p_Config == nullptr) {
 		return CONFIG_NOT_SET;
 	}
@@ -520,7 +545,7 @@ LIBPINMAME_API PINMAME_STATUS PinmameGetGames(PinmameGameCallback callback) {
 		game.found = RomsetMissing(gameNum) == 0;
 
 		if (callback) {
-			(*callback)(&game);
+			(*callback)(&game, p_userData);
 		}
 
 		gameNum++;
@@ -540,7 +565,7 @@ LIBPINMAME_API void PinmameSetConfig(const PinmameConfig* const p_config) {
 
 	memcpy(_p_Config, p_config, sizeof(PinmameConfig));
 
-	fprintf(stdout, "PinmameSetConfig(): sampleRate=%d, vpmPath=%s\n", _p_Config->sampleRate, _p_Config->vpmPath);
+	libpinmame_log_message("PinmameSetConfig(): sampleRate=%d, vpmPath=%s\n", _p_Config->sampleRate, _p_Config->vpmPath);
 
 	memset(&options, 0, sizeof(options));
 
@@ -560,6 +585,36 @@ LIBPINMAME_API void PinmameSetConfig(const PinmameConfig* const p_config) {
 	throttle = 1;
 	autoframeskip = 0;
 	allow_sleep = 1;
+}
+
+/******************************************************
+ * PinmameSetPath
+ ******************************************************/
+
+LIBPINMAME_API void PinmameSetPath(const PINMAME_FILE_TYPE fileType, const char* const p_path) {
+	if (!p_path)
+		return;
+
+	char* const newPath = (char*)malloc(strlen(p_path) + 1);
+	strcpy(newPath, p_path);
+
+	switch(fileType) {
+		case ROMS:
+			setPath(FILETYPE_ROM, newPath);
+			break;
+		case NVRAM:
+			setPath(FILETYPE_NVRAM, newPath);
+			break;
+		case SAMPLES:
+			setPath(FILETYPE_SAMPLE, newPath);
+			break;
+		case CONFIG:
+			setPath(FILETYPE_CONFIG, newPath);
+			break;
+		case HIGHSCORE:
+			setPath(FILETYPE_HIGHSCORE, newPath);
+			break;
+	}
 }
 
 /******************************************************
@@ -592,6 +647,22 @@ LIBPINMAME_API int PinmameGetHandleMechanics() {
 
 LIBPINMAME_API void PinmameSetHandleMechanics(const int handleMechanics) {
 	g_fHandleMechanics = handleMechanics;
+}
+
+/******************************************************
+ * PinmameSetDmdMode
+ ******************************************************/
+
+LIBPINMAME_API void PinmameSetDmdMode(const PINMAME_DMD_MODE dmdMode) {
+	g_fDmdMode = dmdMode;
+}
+
+/******************************************************
+ * PinmameGetDmdMode
+ ******************************************************/
+
+LIBPINMAME_API PINMAME_DMD_MODE PinmameGetDmdMode() {
+	return g_fDmdMode;
 }
 
 /******************************************************
@@ -661,11 +732,20 @@ LIBPINMAME_API PINMAME_STATUS PinmamePause(const int pause) {
 }
 
 /******************************************************
+ * PinmameIsPaused
+ ******************************************************/
+
+LIBPINMAME_API int PinmameIsPaused() {
+	return g_fPause;
+}
+
+/******************************************************
  * PinmameStop
  ******************************************************/
 
 LIBPINMAME_API void PinmameStop() {
 	if (_p_gameThread) {
+		g_fPause = 0;
 		_timeToQuit = 1;
 
 		_p_gameThread->join();
@@ -712,12 +792,61 @@ LIBPINMAME_API void PinmameSetSwitch(const int swNo, const int state) {
  * PinmameSetSwitches
  ******************************************************/
 
-LIBPINMAME_API void PinmameSetSwitches(const int* const p_states, const int numSwitches) {
+LIBPINMAME_API void PinmameSetSwitches(const PinmameSwitchState* const p_states, const int numSwitches) {
 	if (_isRunning) {
 		for (int i = 0; i < numSwitches; ++i) {
-			vp_putSwitch(p_states[i*2], p_states[i*2+1] ? 1 : 0);
+			vp_putSwitch(p_states[i].swNo, p_states[i].state ? 1 : 0);
 		}
 	}
+}
+
+/******************************************************
+ * PinmameGetSolenoidMask
+ ******************************************************/
+
+LIBPINMAME_API uint32_t PinmameGetSolenoidMask(const int low) {
+	return vp_getSolMask(low);
+}
+
+/******************************************************
+ * PinmameSetSolenoidMask
+ ******************************************************/
+
+LIBPINMAME_API void PinmameSetSolenoidMask(const int low, const uint32_t mask) {
+	vp_setSolMask(low, mask);
+}
+
+/******************************************************
+ * PinmameGetMaxSolenoids
+ ******************************************************/
+
+LIBPINMAME_API int PinmameGetMaxSolenoids() {
+	return (CORE_MAXSOL + CORE_MODSOL_MAX);
+}
+
+/******************************************************
+ * PinmameGetSolenoid
+ ******************************************************/
+
+LIBPINMAME_API int PinmameGetSolenoid(const int solNo) {
+	return (_isRunning) ? vp_getSolenoid(solNo) : 0;
+}
+
+/******************************************************
+ * PinmameGetChangedSolenoids
+ ******************************************************/
+
+LIBPINMAME_API int PinmameGetChangedSolenoids(PinmameSolenoidState* const p_changedStates) {
+	if (!_isRunning) {
+		return -1;
+	}
+
+	vp_tChgSols chgSols;
+	const int count = vp_getChangedSolenoids(chgSols);
+	if (count > 0) {
+		memcpy(p_changedStates, chgSols, count * sizeof(PinmameSolenoidState));
+	}
+	return count;
 }
 
 /******************************************************
@@ -725,30 +854,31 @@ LIBPINMAME_API void PinmameSetSwitches(const int* const p_states, const int numS
  ******************************************************/
 
 LIBPINMAME_API int PinmameGetMaxLamps() {
-	return CORE_MAXLAMPCOL * 8;
+	return (CORE_MAXLAMPCOL * 8) + CORE_MAXRGBLAMPS;
+}
+
+/******************************************************
+ * PinmameGetLamp
+ ******************************************************/
+
+LIBPINMAME_API int PinmameGetLamp(const int lampNo) {
+	return (_isRunning) ? vp_getLamp(lampNo) : 0;
 }
 
 /******************************************************
  * PinmameGetChangedLamps
  ******************************************************/
 
-LIBPINMAME_API int PinmameGetChangedLamps(int* const p_changedStates) {
+LIBPINMAME_API int PinmameGetChangedLamps(PinmameLampState* const p_changedStates) {
 	if (!_isRunning) {
 		return -1;
 	}
 
 	vp_tChgLamps chgLamps;
 	const int count = vp_getChangedLamps(chgLamps);
-	if (count == 0) {
-		return 0;
+	if (count > 0) {
+		memcpy(p_changedStates, chgLamps, count * sizeof(PinmameLampState));
 	}
-
-	int* p_out = p_changedStates;
-	for (int i = 0; i < count; i++) {
-		*(p_out++) = chgLamps[i].lampNo;
-		*(p_out++) = chgLamps[i].currStat;
-	}
-
 	return count;
 }
 
@@ -764,23 +894,41 @@ LIBPINMAME_API int PinmameGetMaxGIs() {
  * PinmameGetChangedGIs
  ******************************************************/
 
-LIBPINMAME_API int PinmameGetChangedGIs(int* const p_changedStates) {
+LIBPINMAME_API int PinmameGetChangedGIs(PinmameGIState* const p_changedStates) {
 	if (!_isRunning) {
 		return -1;
 	}
 
 	vp_tChgGIs chgGIs;
 	const int count = vp_getChangedGI(chgGIs);
-	if (count == 0) {
-		return 0;
+	if (count > 0) {
+		memcpy(p_changedStates, chgGIs, count * sizeof(PinmameGIState));
+	}
+	return count;
+}
+
+/******************************************************
+ * PinmameGetMaxLEDs
+ ******************************************************/
+
+LIBPINMAME_API int PinmameGetMaxLEDs() {
+	return CORE_SEGCOUNT;
+}
+
+/******************************************************
+ * PinmameGetChangedLEDs
+ ******************************************************/
+
+LIBPINMAME_API int PinmameGetChangedLEDs(const uint64_t mask, const uint64_t mask2, PinmameLEDState* const p_changedStates) {
+	if (!_isRunning) {
+		return -1;
 	}
 
-	int* out = p_changedStates;
-	for (int i = 0; i < count; i++) {
-		*(out++) = chgGIs[i].giNo;
-		*(out++) = chgGIs[i].currStat;
+	vp_tChgLED chgLEDs;
+	const int count = vp_getChangedLEDs(chgLEDs, mask, mask2);
+	if (count > 0) {
+		memcpy(p_changedStates, chgLEDs, count * sizeof(PinmameLEDState));
 	}
-
 	return count;
 }
 
@@ -797,10 +945,6 @@ LIBPINMAME_API int PinmameGetMaxMechs() {
  ******************************************************/
 
 LIBPINMAME_API PINMAME_STATUS PinmameSetMech(const int mechNo, const PinmameMechConfig* const p_mechConfig) {
-	if (!_isRunning) {
-		return EMULATOR_NOT_RUNNING;
-	}
-	
 	if (g_fHandleMechanics) {
 		return MECH_HANDLE_MECHANICS;
 	}
@@ -825,7 +969,7 @@ LIBPINMAME_API PINMAME_STATUS PinmameSetMech(const int mechNo, const PinmameMech
 		mechInitData.type = (mechInitData.type & 0xff0001ff) | MECH_ACC(p_mechConfig->acc);
 		mechInitData.type = (mechInitData.type & 0x00ffffff) | MECH_RET(p_mechConfig->ret);
 
-		for (int index = 0; index < MAX_MECHSW; index++) {
+		for (int index = 0; index < PINMAME_MAX_MECHSW; index++) {
 			mechInitData.sw[index].swNo = p_mechConfig->sw[index].swNo;
 			mechInitData.sw[index].startPos = p_mechConfig->sw[index].startPos;
 			mechInitData.sw[index].endPos = p_mechConfig->sw[index].endPos;
@@ -838,4 +982,30 @@ LIBPINMAME_API PINMAME_STATUS PinmameSetMech(const int mechNo, const PinmameMech
 	mech_add(mechNo + (MECH_MAXMECH / 2), &mechInitData);
 
 	return OK;
+}
+
+/******************************************************
+ * PinmameGetDIP
+ ******************************************************/
+
+LIBPINMAME_API int PinmameGetDIP(const int dipBank) {
+	return (_isRunning) ? vp_getDIP(dipBank) : 0;
+}
+
+/******************************************************
+ * PinmameSetDIP
+ ******************************************************/
+
+LIBPINMAME_API void PinmameSetDIP(const int dipBank, const int value) {
+	if (_isRunning) {
+		 vp_setDIP(dipBank, value);
+	}
+}
+
+/******************************************************
+ * PinmameSetUserData
+ ******************************************************/
+
+LIBPINMAME_API void PinmameSetUserData(const void* p_userData) {
+	_p_userData = (void*)p_userData;
 }

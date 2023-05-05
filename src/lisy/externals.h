@@ -1,8 +1,14 @@
+// license:BSD-3-Clause
+
 #ifndef EXTERNALS_H
 #define EXTERNALS_H
 
+#include "fileio.h"
+#include "hw_lib.h"
+#include "fadecandy.h"
+#include "lisy_home.h"
 
-// all the extenal global vars & routines
+//all the external global vars & routines
 //from lisy80.c or lisy1.c or lisy.c or lisy_w.c
 
 extern int lisy_has24c04;
@@ -25,6 +31,7 @@ extern t_lisy_home_lamp_map lisy_home_lamp_map[49];
 extern t_lisy_home_coil_map lisy_home_coil_map[10];
 extern t_lisy_home_ss_lamp_map lisy_home_ss_lamp_map[60];
 extern t_lisy_home_ss_coil_map lisy_home_ss_coil_map[20];
+extern t_lisy_home_ss_sound_map lisy_home_ss_sound_map[6];
 extern t_lisy_home_ss_special_coil_map lisy_home_ss_special_coil_map[20];
 extern t_lisy_home_ss_special_lamp_map lisy_home_ss_special_lamp_map[24];
 extern t_lisy_home_ss_GI_leds lisy_home_ss_GI_leds[128];
@@ -35,18 +42,17 @@ extern t_lisy_home_ss_general lisy_home_ss_general;
 
 extern int lisy_m_APC_coil_HW_rule[32];
 
-extern int fd_api;  //file descriptor for lisy api ( eg APC )
+extern int fd_api; //file descriptor for lisy api ( eg APC )
 
 extern t_stru_lisy80_games_csv lisy80_game;
 extern t_stru_lisy1_games_csv lisy1_game;
 extern t_stru_lisy35_games_csv lisy35_game;
 extern t_stru_lisymini_games_csv lisymini_game;
 
-void lisy1_init( void );
-void lisy80_init( void );
-void lisy35_init( void );
-void lisy35_ss_init( void );
-void lisy_w_init( void );
+void lisy1_init(void);
+void lisy80_init(void);
+void lisy35_init(void);
+void lisy35_ss_init(void);
+void lisy_w_init(void);
 
-
-#endif  /* EXTERNALS_H */
+#endif /* EXTERNALS_H */

@@ -1,3 +1,5 @@
+// license:BSD-3-Clause
+
 /********************************************************************************************
  Williams Terminator 2: Judgement Day (1991) Pinball Simulator
 
@@ -25,6 +27,9 @@
   12-05-2000: Modified custom playfield lamp layout to accomodate new structure.
               Added support for shared bulbs where necessary
   12-30-2000: Added Sample Support
+
+
+  Excessive documentation of the T2 ROM: https://www.flippermarkt.de/community/howto/cms/media/pages/pdfs/workshops/Terminator2_L8_3_(FINAL).pdf
 
  *********************************************************************************************************/
 
