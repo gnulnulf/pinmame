@@ -27,6 +27,16 @@ int osd_init(void)
 #endif	
 	if (osd_input_initpre() !=OSD_OK) return OSD_NOT_OK;
 
+#ifdef MAME_SOCKET
+       mame_socket_init();
+       //if (mame_fifo_init()      !=OSD_OK) return OSD_NOT_OK;
+       //char bla[4096] ;
+       //sprintf(bla, "Will this work?\n\n");
+    //mame_fifo_send(bla);
+    //mame_fifo_send("Test2\n");
+       //    fprintf(stdout,"Hello from mamesocket\n");
+#endif /* MAME_SOCKET */
+
 	return OSD_OK;
 }
 
@@ -38,6 +48,17 @@ void osd_exit(void)
 #ifdef XMAME_NET
 	osd_net_close();
 #endif
+
+#ifdef MAME_SOCKET
+       mame_socket_close();
+       //if (mame_fifo_init()      !=OSD_OK) return OSD_NOT_OK;
+       //char bla[4096] ;
+       //sprintf(bla, "Will this work?\n\n");
+    //mame_fifo_send(bla);
+    //mame_fifo_send("Test2\n");
+       //    fprintf(stdout,"Hello from mamesocket\n");
+#endif /* MAME_SOCKET */
+
 	osd_input_close();
 }
 

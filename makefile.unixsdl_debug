@@ -76,6 +76,9 @@ TARGET = pinmame
 # this will also select 'vid_lisy' as DISPLAY_METHOD
 # LISY_X_FAKE_VIDEO = 1
 
+# enable to add tcp socket 16914 ( see src/mamesocket/README.md )
+MAME_SOCKET = 1
+
 ###########################################################################
 # Development environment options 
 ###########################################################################
@@ -618,8 +621,8 @@ ARCH  = linux
 #DISPLAY_METHOD = x11
 
 # SDL library 
-#DISPLAY_METHOD = sdl
-DISPLAY_METHOD = sdl2
+DISPLAY_METHOD = sdl
+# DISPLAY_METHOD = sdl2
 
 # SVGALib, only supported under Linux
 # DISPLAY_METHOD = svgalib

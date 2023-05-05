@@ -80,6 +80,10 @@
 #include "network.h"
 #endif /* MAME_NET */
 
+#ifdef MAME_SOCKET
+#include "mamesocket/mamesocket.h"
+#endif /* MAME_SOCKET */
+
 #ifdef PINMAME
 typedef struct {
   int dmd_red, dmd_green, dmd_blue;

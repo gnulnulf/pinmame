@@ -188,6 +188,11 @@ ifdef LISY_X
 include src/lisy/lisy.mak
 endif
 
+ifdef MAME_SOCKET
+include src/mamesocket/mamesocket.mak
+CFLAGS += -DMAME_SOCKET
+endif
+
 ifdef DEBUG
 DBGDEFS = -DMAME_DEBUG
 else

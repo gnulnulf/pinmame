@@ -376,6 +376,9 @@ static void internal_code_update(void)
 				internal_oscode_add(joyinfo->code,CODE_TYPE_JOYSTICK);
 		++joyinfo;
 	}
+#ifdef MAME_SOCKET
+       mame_socket_loop();
+#endif
 
 #if defined(PINMAME) && defined(PROC_SUPPORT)
 	procinfo = osd_get_proc_list();

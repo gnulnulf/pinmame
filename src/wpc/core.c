@@ -1422,6 +1422,11 @@ void core_updateSw(int flipEn) {
   if (g_fHandleKeyboard && ((inports[CORE_MANSWINPORT] & 0x06) == 0x06))
     logerror("\nLogfile Mark\n");
 #endif /* MAME_DEBUG */
+
+#ifdef MAME_SOCKET
+  mame_socket_loop(coreGlobals);
+#endif
+
 }
 
 /*--------------------------
