@@ -1,4 +1,4 @@
-name: xpinmame
+name: xpinmamed
 on:
   push:
   pull_request:
@@ -41,7 +41,7 @@ jobs:
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
 
   build:
-    name: Build xpinmame-${{ matrix.platform }}
+    name: Build xpinmamed-${{ matrix.platform }}
     runs-on: ${{ matrix.os }}
     needs: [ version ]
     strategy:
@@ -50,10 +50,10 @@ jobs:
         include:
           - os: macos-latest
             platform: osx-x64
-            exe: xpinmame
+            exe: xpinmamed
           - os: ubuntu-latest
             platform: linux-x64
-            exe: xpinmame
+            exe: xpinmamed
     steps:
       - uses: actions/checkout@v4
       - if: matrix.os == 'macos-latest'
@@ -63,11 +63,11 @@ jobs:
       - if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt update && sudo apt install libasound2-dev libsdl2-dev
-      - name: Build xpinmame-${{ matrix.platform }}
+      - name: Build xpinmamed-${{ matrix.platform }}
         run: |
           cp cmake/xpinmame/CMakeLists_${{ matrix.platform }}.txt CMakeLists.txt
           cmake -DCMAKE_BUILD_TYPE=Release -B build/Release
-          cmake --build build/Release
+          cmake --build build/Release --target=xpinmamed
       - run: |
           mkdir tmp
           cp build/Release/${{ matrix.exe }} tmp
@@ -77,5 +77,5 @@ jobs:
           cp release/whatsnew.txt tmp
       - uses: actions/upload-artifact@v4
         with:
-          name: xpinmame-${{ needs.version.outputs.tag }}-${{ matrix.platform }}
+          name: xpinmamed-${{ needs.version.outputs.tag }}-${{ matrix.platform }}
           path: tmp
