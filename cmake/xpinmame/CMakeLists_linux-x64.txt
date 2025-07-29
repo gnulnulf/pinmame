@@ -82,7 +82,7 @@ add_compile_definitions(
    MAMEVER=7300
    PINMAME
    PINMAME_NO_UNUSED
-   PINMAME_HOST_UART
+
    SAM_INCLUDE_COLORED
    NAME="xpinmame"
 
@@ -107,13 +107,13 @@ add_compile_definitions(
    XMAMEROOT="/usr/local/share/xpinmame"
    HAVE_SNPRINTF
    HAVE_GETTIMEOFDAY
-#   SYSDEP_DSP_ALSA
-#   SYSDEP_MIXER_ALSA
+   #SYSDEP_DSP_ALSA
+   #SYSDEP_MIXER_ALSA
+   #SYSDEP_DSP_OSS
    SYSDEP_DSP_SDL
-   SDL_DEBUG
 )
 
-add_executable(xpinmame
+set(CommonSource
    src/artwork.c
    src/artwork.h
    src/audit.c
@@ -596,7 +596,8 @@ add_executable(xpinmame
 
    ext/ymfm/ymfm_opm.cpp
    ext/ymfm/ymfm_opm.h
-
+)
+set(UnixSource
    src/unix/main.c
    src/unix/sound.c
    src/unix/keyboard.c
@@ -624,7 +625,8 @@ add_executable(xpinmame
    src/unix/sysdep/sysdep_mixer.c
 #   src/unix/sysdep/dsp-drivers/alsa.c
 #   src/unix/sysdep/mixer-drivers/alsa.c
-   src/unix/sysdep/dsp-drivers/sdl.c
+#   src/unix/sysdep/dsp-drivers/oss.c
+      src/unix/sysdep/dsp-drivers/sdl.c
 #   src/unix/video-drivers/x11.c
 #   src/unix/video-drivers/xinput.c
 #   src/unix/video-drivers/x11_window.c
@@ -637,13 +639,21 @@ add_executable(xpinmame
    src/unix/frameskip-drivers/barath.c
 )
 
+
+add_executable(xpinmame
+${CommonSource}
+${UnixSource}
+)
+
+add_executable(xpinmamed
+${CommonSource}
+${UnixSource}
+)
+
+
 find_package(
    ZLIB REQUIRED
 )
-
-#find_package(
-#   X11
-#)
 
 find_package(
    ALSA
@@ -677,4 +687,36 @@ target_link_libraries(xpinmame PUBLIC
 
 set_target_properties(xpinmame PROPERTIES
    VERSION ${PROJECT_VERSION}
+)
+
+target_include_directories(xpinmamed PUBLIC
+   src
+   src/wpc
+   src/cpu/m68000
+   src/cpu/m68000/generated_by_m68kmake
+   src/unix
+   src/unix/sysdep
+#   ${X11_X11_INCLUDE_PATH}
+#   ${X11_Xv_INCLUDE_PATH}
+   ${ALSA_INCLUDE_DIRS}
+   ${SDL2_INCLUDE_DIRS}
+)
+
+target_link_libraries(xpinmamed PUBLIC
+   ZLIB::ZLIB
+   curses
+#   ${X11_X11_LIB}
+#   ${X11_Xv_LIB}
+#   ${X11_Xext_LIB}
+   ${ALSA_LIBRARIES}
+   ${SDL2_LIBRARIES}
+)
+
+set_target_properties(xpinmamed PROPERTIES
+   VERSION ${PROJECT_VERSION}
+)
+
+target_compile_options(xpinmamed PUBLIC
+-DMAME_DEBUG
+-DNDEBUG
 )

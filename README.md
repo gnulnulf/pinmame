@@ -155,3 +155,24 @@ For more information, please refer to [simulation.txt](release/simulation.txt) f
 # Note from the PinMAME Development team
 
 We're working hard to improve this great emulator, and welcome your feedback!! Please do not hesitate to contact us with questions, bug reports, suggestions, code patches, whatever!
+
+### Linux
+
+```shell
+sudo apt update && sudo apt install libasound2-dev
+cp ./cmake/xpinmame/CMakeLists_linux-x64.txt ./CMakeLists.txt
+cmake -DCMAKE_BUILD_TYPE=Release -B build
+cmake --build build -- -j$(sysctl -n hw.ncpu)
+# Run Terminator 2
+./build/xpinmame -rompath ~/.pinmame/roms -nvram_directory ~/.pinmame/nvram -scale 2  t2_l8
+```
+
+If you need the debugger:
+```shell
+sudo apt update && sudo apt install libasound2-dev
+cp ./cmake/xpinmame/CMakeLists_linux-x64.txt ./CMakeLists.txt
+cmake -DCMAKE_BUILD_TYPE=Release -B build
+cmake --build build --target xpinmamed -- -j$(sysctl -n hw.ncpu)
+# Run Terminator 2
+./build/xpinmame -rompath ~/.pinmame/roms -nvram_directory ~/.pinmame/nvram -scale 2  t2_l8
+```
