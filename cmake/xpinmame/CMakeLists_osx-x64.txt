@@ -688,7 +688,6 @@ target_include_directories(xpinmamed PUBLIC
    src/unix/sysdep
 #   ${X11_X11_INCLUDE_PATH}
 #   ${X11_Xv_INCLUDE_PATH}
-   ${ALSA_INCLUDE_DIRS}
    ${SDL2_INCLUDE_DIRS}
 )
 
@@ -698,6 +697,6 @@ target_link_libraries(xpinmamed PUBLIC
 #   ${X11_X11_LIB}
 #   ${X11_Xv_LIB}
 #   ${X11_Xext_LIB}
-   ${ALSA_LIBRARIES}
+   ${COREAUDIO_FRAMEWORK}
    ${SDL2_LIBRARIES}
 )
