@@ -105,7 +105,7 @@ add_definitions(
     "-DINLINE=static inline __attribute__((always_inline))"
 )
 
-add_executable(xpinmame 
+set(CommonSource
    src/artwork.c
    src/artwork.h
    src/audit.c
@@ -588,7 +588,8 @@ add_executable(xpinmame
 
    ext/ymfm/ymfm_opm.cpp
    ext/ymfm/ymfm_opm.h
-
+)
+set(UnixSource
    src/unix/main.c 
    src/unix/sound.c 
    src/unix/keyboard.c 
@@ -626,6 +627,17 @@ add_executable(xpinmame
    src/unix/frameskip-drivers/dos.c 
    src/unix/frameskip-drivers/barath.c 
 )
+
+add_executable(xpinmame
+${CommonSource}
+${UnixSource}
+)
+
+add_executable(xpinmamed
+${CommonSource}
+${UnixSource}
+)
+
 
 find_package(
    ZLIB
@@ -665,4 +677,27 @@ target_link_libraries(xpinmame PUBLIC
 
 set_target_properties(xpinmame PROPERTIES
    VERSION ${PROJECT_VERSION}
+)
+
+target_include_directories(xpinmamed PUBLIC
+   src
+   src/wpc
+   src/cpu/m68000
+   src/cpu/m68000/generated_by_m68kmake
+   src/unix
+   src/unix/sysdep
+#   ${X11_X11_INCLUDE_PATH}
+#   ${X11_Xv_INCLUDE_PATH}
+   ${ALSA_INCLUDE_DIRS}
+   ${SDL2_INCLUDE_DIRS}
+)
+
+target_link_libraries(xpinmamed PUBLIC
+   ZLIB::ZLIB
+   curses
+#   ${X11_X11_LIB}
+#   ${X11_Xv_LIB}
+#   ${X11_Xext_LIB}
+   ${ALSA_LIBRARIES}
+   ${SDL2_LIBRARIES}
 )
