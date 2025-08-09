@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
-file(READ src/version.h version)
-string(REGEX MATCH "#define VERSION_MAJOR +([0-9]+).*#define VERSION_MINOR +([0-9]+).*#define VERSION_REV +([0-9]+)" _ ${version})
+#file(READ src/version.h version)
+#string(REGEX MATCH "#define VERSION_MAJOR +([0-9]+).*#define VERSION_MINOR +([0-9]+).*#define VERSION_REV +([0-9]+)" _ ${version})
 
-set(PROJECT_VERSION "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
-message("PROJECT_VERSION=${PROJECT_VERSION}")
+#set(PROJECT_VERSION "${CMAKE_MATCH_1}.${CMAKE_MATCH_2}")
+#message("PROJECT_VERSION=${PROJECT_VERSION}")
 
-															
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_globals.txt)
+													
 
 project(pinmame VERSION ${PROJECT_VERSION})
 
@@ -95,7 +96,7 @@ add_compile_definitions(
    __LP64__
 )
 
-add_executable(pinmame WIN32
+set(PINMAME_WIN_SOURCES
    src/artwork.c
    src/artwork.h
    src/audit.c
@@ -636,16 +637,17 @@ add_executable(pinmame WIN32
    ext/zlib/zutil.c
 )
 
-							
-					 
-						 
-						 
- 
-							 
-					 
-						 
-						 
- 
+add_executable(pinmame WIN32
+   #${PINMAME_SOURCES}
+   #${PINMAME_SIM_SOURCES}
+   ${PINMAME_WIN_SOURCES}
+)
+						
+add_executable(pinmamed WIN32
+   #${PINMAME_SOURCES}
+   #${PINMAME_SIM_SOURCES}
+   ${PINMAME_WIN_SOURCES}
+)
 
 set(OPT_COMMON /Ob2 /O2 /Oi /fp:fast /fp:except- /Ot /GF /GS- /Gy /GR- /Oy /GT /GL /EHsc)
 
@@ -655,15 +657,6 @@ target_compile_options(pinmame PUBLIC
    $<$<CONFIG:RELEASE>:$<$<COMPILE_LANGUAGE:C>:${OPT_COMMON}>>
    $<$<CONFIG:DEBUG>:$<$<COMPILE_LANGUAGE:C>:/EHsc>>
 )
-
-									  
-																
-													  
-															  
-													
-			
-		
- 
 
 target_include_directories(pinmame PUBLIC
    src
@@ -702,6 +695,42 @@ set_target_properties(pinmame PROPERTIES
    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:DEBUG>:Debug>"
 )
 
+target_include_directories(pinmamed PUBLIC
+   src
+   src/cpu/m68000/generated_by_m68kmake
+   src/wpc
+   src/vc
+   src/windows
+   ext/zlib
+   ext/dinput/include
+)
+
+target_link_directories(pinmamed PUBLIC
+   ext/dinput
+)
+
+target_link_libraries(pinmamed
+   winmm.lib
+   ddraw64.lib
+   dxguid64.lib
+   dsound64.lib
+   dinput64.lib
+)
+
+target_link_options(pinmamed PUBLIC
+   /SUBSYSTEM:CONSOLE
+   /SAFESEH:NO
+   $<$<CONFIG:RELEASE>:/INCREMENTAL:NO>
+   $<$<CONFIG:RELEASE>:/OPT:REF>
+   $<$<CONFIG:RELEASE>:/OPT:ICF>
+   $<$<CONFIG:RELEASE>:/LTCG>
+   $<$<CONFIG:RELEASE>:/DYNAMICBASE:NO>
+)
+
+set_target_properties(pinmamed PROPERTIES
+   RUNTIME_OUTPUT_NAME "PinMAMEd"
+   MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:DEBUG>:Debug>"
+)
 										  
 	  
 									   
