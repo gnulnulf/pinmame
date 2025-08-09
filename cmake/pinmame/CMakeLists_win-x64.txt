@@ -96,7 +96,7 @@ add_executable(pinmame WIN32
    ${PINMAME_SIM_SOURCES}
    ${PINMAME_WIN_SOURCES}
 )
-add_executable(pinmame WIN32
+add_executable(pinmamed WIN32
    ${PINMAME_SOURCES}
    ${PINMAME_SIM_SOURCES}
    ${PINMAME_WIN_SOURCES}
