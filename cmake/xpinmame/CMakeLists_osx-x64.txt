@@ -650,7 +650,7 @@ target_include_directories(xpinmame PUBLIC
    src/cpu/m68000/generated_by_m68kmake
    src/unix
    ${X11_X11_INCLUDE_PATH}
-   ${X11_Xv_INCLUDE_PATH}
+   #${X11_Xv_INCLUDE_PATH}
 )
 
 target_link_libraries(xpinmame PUBLIC
@@ -672,7 +672,7 @@ target_include_directories(xpinmamed PUBLIC
    src/cpu/m68000/generated_by_m68kmake
    src/unix
    ${X11_X11_INCLUDE_PATH}
-   ${X11_Xv_INCLUDE_PATH}
+   #${X11_Xv_INCLUDE_PATH}
 )
 
 target_link_libraries(xpinmamed PUBLIC
