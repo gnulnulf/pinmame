@@ -627,6 +627,10 @@ add_executable(xpinmame
   ${PINMAME_OSX_SOURCES}
 )
 
+add_executable(xpinmamed 
+  ${PINMAME_OSX_SOURCES}
+)
+
 find_package(
    ZLIB
 )
