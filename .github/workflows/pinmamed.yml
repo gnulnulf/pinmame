@@ -79,7 +79,7 @@ jobs:
           cp cmake/pinmame/CMakeLists_${{ matrix.platform }}.txt CMakeLists.txt
           cmake ${{ matrix.extra-flags }} -G "Visual Studio 17 2022" -A ${{ matrix.platform-name }} -B build
           cmake --build build --config Release --target=pinmamed
-          ./upx/upx.exe --best --lzma build/Release/PinMAMEd.exe
+          # ./upx/upx.exe --best --lzma build/Release/PinMAMEd.exe
       - run: |
           mkdir tmp
           cp build/Release/PinMAMEd.exe tmp
