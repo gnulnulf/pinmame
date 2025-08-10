@@ -731,7 +731,16 @@ set_target_properties(pinmamed PROPERTIES
    RUNTIME_OUTPUT_NAME "PinMAMEd"
    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:DEBUG>:Debug>"
 )
-										  
+
+target_compile_options(pinmamed PUBLIC
+   $<$<CONFIG:RELEASE>:$<$<COMPILE_LANGUAGE:CXX>:${OPT_COMMON}>>
+   $<$<CONFIG:DEBUG>:$<$<COMPILE_LANGUAGE:CXX>:/EHsc>>
+   $<$<CONFIG:RELEASE>:$<$<COMPILE_LANGUAGE:C>:${OPT_COMMON}>>
+   $<$<CONFIG:DEBUG>:$<$<COMPILE_LANGUAGE:C>:/EHsc>>
+   -DMAME_DEBUG
+   -DNDEBUG
+)
+
 	  
 									   
 		  
